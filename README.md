@@ -2,14 +2,14 @@
 
 https://github.com/ericchase/browseruserscripts
 
-[Static Listing](https://ericchase.github.io/browseruserscripts/out)
+[Static Listing](https://ericchase.github.io/browseruserscripts/out/)
 
 Userscripts for use with the Greasemonkey, Violentmonkey, Tampermonkey, and alternative browser extensions to modify existing websites. These scripts are written in TypeScript and compiled into JavaScript using a custom build tool.
 
 To quickly install scripts, visit the Static Listing and click the link for a userscript you want. If you have an extension (like Violentmonkey) installed, the page should be recognized as a userscript and, and you should get a prompt to install it.
 
-[Violentmonkey for Chrome](https://addons.mozilla.org/en-US/firefox/addon/styl-us/)
-[Violentmonkey for Firefox](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/)
+- [Violentmonkey for Chrome](https://addons.mozilla.org/en-US/firefox/addon/styl-us/)
+- [Violentmonkey for Firefox](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/)
 
 ## TypeScript Library and Template Project
 
