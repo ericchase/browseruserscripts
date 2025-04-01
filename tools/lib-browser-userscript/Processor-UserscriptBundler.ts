@@ -1,7 +1,7 @@
-import { Path } from '../src/lib/ericchase/Platform/FilePath.js';
-import { Logger } from '../src/lib/ericchase/Utility/Logger.js';
-import { BuilderInternal, ProcessorModule, ProjectFile } from './lib/Builder.js';
-import { ts_tsx_js_jsx } from './lib/processors/TypeScript-GenericBundler.js';
+import { Path } from '../../src/lib/ericchase/Platform/FilePath.js';
+import { Logger } from '../../src/lib/ericchase/Utility/Logger.js';
+import { BuilderInternal, ProcessorModule, ProjectFile } from '../lib/Builder.js';
+import { ts_tsx_js_jsx } from '../lib/processors/TypeScript-GenericBundler.js';
 
 const logger = Logger(Processor_UserscriptBundler.name);
 
