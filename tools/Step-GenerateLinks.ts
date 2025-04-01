@@ -17,7 +17,7 @@ class CStep_GenerateLinks implements Step {
 
     const atags: string[] = [];
     for (const file of builder.files) {
-      if (builder.platform.Utility.globMatch(file.src_path.standard, `**/*{.user}.${ts_tsx_js_jsx}`) === true) {
+      if (builder.platform.Utility.globMatch(file.src_path.standard, `**/*{.user}${ts_tsx_js_jsx}`) === true) {
         atags.push(`<a href="./${file.out_path.basename}" target="_blank">${file.out_path.basename}</a>`);
       }
     }
