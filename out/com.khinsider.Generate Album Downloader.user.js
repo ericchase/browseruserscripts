@@ -7,7 +7,7 @@
 // @description 2023/12/20, 9:22:10 AM
 // @run-at      document-start
 // @grant       none
-// @homepageURL https://github.com/ericchase/browser--userscripts
+// @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
 // src/lib/ericchase/Platform/Web/AnchorDownloader.ts

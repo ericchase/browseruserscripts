@@ -1,6 +1,7 @@
 import { Path } from '../src/lib/ericchase/Platform/FilePath.js';
 import { Logger } from '../src/lib/ericchase/Utility/Logger.js';
 import { BuilderInternal, Step } from './lib/Builder.js';
+import { ts_tsx_js_jsx } from './lib/processors/TypeScript-GenericBundler.js';
 
 const logger = Logger(Step_GenerateLinks.name);
 
@@ -16,7 +17,7 @@ class CStep_GenerateLinks implements Step {
 
     const atags: string[] = [];
     for (const file of builder.files) {
-      if (file.out_path.endsWith('.user.js')) {
+      if (builder.platform.Utility.globMatch(file.src_path.standard, `**/*{.user}.${ts_tsx_js_jsx}`) === true) {
         atags.push(`<a href="./${file.out_path.basename}" target="_blank">${file.out_path.basename}</a>`);
       }
     }

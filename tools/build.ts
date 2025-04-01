@@ -24,10 +24,8 @@ builder.setProcessorModules(
   Processor_HTML_CustomComponent(),
   Processor_HTML_ImportConverter(),
   Processor_UserscriptBundler({ sourcemap: 'none' }),
-  // Processor_TypeScript_GenericBundler({ sourcemap: 'none', target: 'browser' }),
-  // Processor_TypeScript_GenericBundlerImportRemapper(),
-  Processor_BasicWriter(['**/*'], [`**/*${ts_tsx_js_jsx}`, `${builder.dir.lib.standard}/**/*`]),
-  Processor_BasicWriter([`**/*{.user}${ts_tsx_js_jsx}`], []),
+  // skip files in @todo folder
+  Processor_BasicWriter([`**/*{.user}${ts_tsx_js_jsx}`, '**/index.html'], ['**/@todo/**/*']), //
 );
 
 builder.setAfterProcessingSteps(

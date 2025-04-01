@@ -7,7 +7,7 @@
 // @description 11/23/2024, 12:47:12 AM
 // @run-at      document-start
 // @grant       none
-// @homepageURL https://github.com/ericchase/browser--userscripts
+// @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
 // src/lib/ericchase/Platform/Web/DOM/MutationObserver/ElementAdded.ts
