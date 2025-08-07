@@ -4,7 +4,7 @@ import { Step_Dev_Project_Update_Config } from './core-dev/step/Step_Dev_Project
 import { Processor_HTML_Custom_Component_Processor } from './core-web/processor/Processor_HTML_Custom_Component_Processor.js';
 import { DEVSERVERHOST, Step_Dev_Server } from './core-web/step/Step_Dev_Server.js';
 import { Builder } from './core/Builder.js';
-import { Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
+import { PATTERN, Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
 import { Step_Bun_Run } from './core/step/Step_Bun_Run.js';
 import { Step_FS_Clean_Directory } from './core/step/Step_FS_Clean_Directory.js';
 import { Processor_TypeScript_UserScript_Bundler } from './lib-browser-userscript/processors/Processor_TypeScript_UserScript_Bundler.js';
@@ -54,7 +54,7 @@ Builder.SetProcessorModules(
 
 // These steps are run after each processing phase.
 Builder.SetAfterProcessingSteps(
-  Step_Dev_Generate_Links(),
+  Step_Dev_Generate_Links({ dirpath: Builder.Dir.Out, pattern: `**/*{.user}${PATTERN.TS_TSX_JS_JSX}` }),
   // During "dev" mode (when "--dev" is passed as an argument), the server
   // will start running with hot refreshing if enabled in your index file.
   Step_Dev_Server(),

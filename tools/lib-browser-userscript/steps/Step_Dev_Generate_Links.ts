@@ -3,21 +3,20 @@ import { Async_BunPlatform_Glob_Scan_Generator } from '../../../src/lib/ericchas
 import { NODE_PATH } from '../../../src/lib/ericchase/NodePlatform.js';
 import { Builder } from '../../core/Builder.js';
 import { Logger } from '../../core/Logger.js';
-import { PATTERN } from '../../core/processor/Processor_TypeScript_Generic_Bundler.js';
 
-export function Step_Dev_Generate_Links(): Builder.Step {
-  return new Class();
+export function Step_Dev_Generate_Links(config: Config): Builder.Step {
+  return new Class(config);
 }
 class Class implements Builder.Step {
   StepName = Step_Dev_Generate_Links.name;
   channel = Logger(this.StepName).newChannel();
 
-  constructor() {}
+  constructor(public config: Config) {}
   async onStartUp(): Promise<void> {}
   async onRun(): Promise<void> {
     this.channel.log('Generate Links');
     const atags: string[] = [];
-    for await (const entry of Async_BunPlatform_Glob_Scan_Generator(Builder.Dir.Out, `**/*{.user}${PATTERN.TS_TSX_JS_JSX}`)) {
+    for await (const entry of Async_BunPlatform_Glob_Scan_Generator(this.config.dirpath, this.config.pattern)) {
       atags.push(`<a href="./${entry}" target="_blank">${entry}</a>`);
     }
     const file__index = Builder.File.Get(NODE_PATH.join(Builder.Dir.Src, 'index.html'));
@@ -28,4 +27,8 @@ class Class implements Builder.Step {
     }
   }
   async onCleanUp(): Promise<void> {}
+}
+interface Config {
+  dirpath: string;
+  pattern: string;
 }
