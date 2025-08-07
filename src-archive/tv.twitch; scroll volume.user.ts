@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        tv.twitch: scroll volume
+// @name        tv.twitch; scroll volume
 // @match       *://www.twitch.tv/*
 // @version     1.0.2
 // @description 1/2/2023, 10:19:38 PM

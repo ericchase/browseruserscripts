@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        com.khinsider: generate album downloader
+// @name        com.khinsider; generate album downloader
 // @match       *://downloads.khinsider.com/game-soundtracks/album/*
 // @version     1.0.0
 // @description 2023/12/20, 9:22:10 AM

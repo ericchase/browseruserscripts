@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        com.reddit: remove thread line events and stop video autoplay
+// @name        com.reddit; remove thread line events and stop video autoplay
 // @match       https://www.reddit.com/*
 // @version     1.0.0
 // @description 11/23/2024, 12:47:12 AM

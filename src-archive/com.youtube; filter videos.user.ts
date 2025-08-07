@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        com.youtube: filter videos
+// @name        com.youtube; filter videos
 // @match       *://*.youtube.*/*
 // @version     1.0.2
 // @description 5/22/2022, 10:37:37 PM

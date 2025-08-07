@@ -1,6 +1,6 @@
 const header = `
 // ==UserScript==
-// @name        @: video zoom
+// @name        @; video zoom
 // @match       *://*/*
 // @version     1.0.8
 // @description 2022/01/23, 12:58:35 AM

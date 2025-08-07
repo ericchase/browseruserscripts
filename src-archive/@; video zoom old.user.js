@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        @: video zoom old
+// @name        @; video zoom old
 // @match       *://*/*
 // @version     1.0.8
 // @description 1/23/2022, 12:58:35 AM

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        com.github: favorite repositories
+// @name        com.github; favorite repositories
 // @match       https://github.com/*
 // @version     1.1.4
 // @description 3/12/2024, 2:56:09 AM

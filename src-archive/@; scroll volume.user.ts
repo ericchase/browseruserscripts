@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        @: scroll volume
+// @name        @; scroll volume
 // @match       *://*/*
 // @version     1.0.1
 // @description 11/4/2023, 11:40:41 PM

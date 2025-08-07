@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        com.google: clean up search results
+// @name        com.google; clean up search results
 // @match       *://*.google.com/*
 // @version     2.0.3
 // @description 8/11/2022, 1:39:30 AM

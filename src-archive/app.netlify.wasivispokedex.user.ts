@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        app.netlify.wasivispokedex: favorite all pokemon
+// @name        app.netlify.wasivispokedex; favorite all pokemon
 // @match       https://wasivispokedex.netlify.app/*
 // @version     1.0.0
 // @description 8/31/2024, 9:52:16 AM

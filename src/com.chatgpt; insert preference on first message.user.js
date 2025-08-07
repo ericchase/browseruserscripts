@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        com.chatgpt: insert preference on first message
+// @name        com.chatgpt; insert preference on first message
 // @match       *://chatgpt.com/*
 // @version     1.0.0
 // @description 7/12/2025, 9:28:02 PM
