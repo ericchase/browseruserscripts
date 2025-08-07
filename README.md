@@ -2,54 +2,32 @@
 
 https://github.com/ericchase/browseruserscripts
 
-[Static Listing](https://ericchase.github.io/browseruserscripts/out/)
+My personal UserScript library:
 
-Userscripts for use with the Greasemonkey, Violentmonkey, Tampermonkey, and alternative browser extensions to modify existing websites. These scripts are written in TypeScript and compiled into JavaScript using a custom build tool.
+- [Static Listing](https://ericchase.github.io/browseruserscripts/out/)
 
-To quickly install scripts, visit the Static Listing and click the link for a userscript you want. If you have an extension (like Violentmonkey) installed, the page should be recognized as a userscript and, and you should get a prompt to install it.
+For more information, please check out the template project:
 
-- [Violentmonkey for Chrome](https://addons.mozilla.org/en-US/firefox/addon/styl-us/)
-- [Violentmonkey for Firefox](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/)
+- https://github.com/ericchase-library/ts-templates-browser-userscript
 
-## TypeScript Library and Template Project
+## Build Tools V4
 
-For information about my TypeScript library and template projects, please visit:
+For information about my TypeScript library and Build Tools, please visit:
 
 - https://github.com/ericchase-library/ts-library
-- https://github.com/ericchase-library/ts-template
 
-## Developer Environment Setup
+## Project Disclaimer
 
-I generally recommend VSCode for web development.
+This template may be updated from time to time.
 
-**Install the Bun runtime**
+## Setup & Usage
 
-- https://bun.sh/
+Setup and use the project as usual:
 
-**Install npm dependencies**
-
-```
+```bash
 bun install
-```
-
-**Build the project**
-
-For continuous building as you work:
-
-```
-bun run dev
-```
-
-For final builds:
-
-```
-bun run build
-```
-
-**Run the Biome linter**
-
-```
-bun run lint
+bun run build # full build
+bun run dev # dev mode
 ```
 
 ## Copyright & License

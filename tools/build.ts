@@ -1,38 +1,67 @@
-import { Processor_UserscriptBundler } from './lib-browser-userscript/Processor-UserscriptBundler.js';
-import { Step_GenerateLinks } from './lib-browser-userscript/Step-GenerateLinks.js';
-import { Builder } from './lib/Builder.js';
-import { Processor_BasicWriter } from './lib/processors/FS-BasicWriter.js';
-import { Processor_HTML_CustomComponent } from './lib/processors/HTML-CustomComponent.js';
-import { Processor_HTML_ImportConverter } from './lib/processors/HTML-ImportConverter.js';
-import { ts_tsx_js_jsx } from './lib/processors/TypeScript-GenericBundler.js';
-import { Step_Bun_Run } from './lib/steps/Bun-Run.js';
-import { Step_DevServer } from './lib/steps/Dev-Server.js';
-import { Step_CleanDirectory } from './lib/steps/FS-CleanDirectory.js';
-import { Step_Format } from './lib/steps/FS-Format.js';
+import { BunPlatform_Args_Has } from '../src/lib/ericchase/BunPlatform_Args_Has.js';
+import { Step_Dev_Format } from './core-dev/step/Step_Dev_Format.js';
+import { Step_Dev_Project_Update_Config } from './core-dev/step/Step_Dev_Project_Update_Config.js';
+import { Processor_HTML_Custom_Component_Processor } from './core-web/processor/Processor_HTML_Custom_Component_Processor.js';
+import { DEVSERVERHOST, Step_Dev_Server } from './core-web/step/Step_Dev_Server.js';
+import { Builder } from './core/Builder.js';
+import { Processor_TypeScript_Generic_Bundler } from './core/processor/Processor_TypeScript_Generic_Bundler.js';
+import { Step_Bun_Run } from './core/step/Step_Bun_Run.js';
+import { Step_FS_Clean_Directory } from './core/step/Step_FS_Clean_Directory.js';
+import { Processor_TypeScript_UserScript_Bundler } from './lib-browser-userscript/processors/Processor_TypeScript_UserScript_Bundler.js';
+import { Step_Dev_Generate_Links } from './lib-browser-userscript/steps/Step_Dev_Generate_Links.js';
 
-const builder = new Builder(Bun.argv[2] === '--watch' ? 'watch' : 'build');
+// Use command line arguments to set dev mode.
+if (BunPlatform_Args_Has('--dev')) {
+  Builder.SetMode(Builder.MODE.DEV);
+}
+Builder.SetVerbosity(Builder.VERBOSITY._1_LOG);
 
-builder.setStartUpSteps(
-  Step_Bun_Run({ cmd: ['bun', 'install'] }, 'quiet'),
-  Step_CleanDirectory(builder.dir.out),
-  Step_Format('quiet'), //
+// These steps are run during the startup phase only.
+Builder.SetStartUpSteps(
+  Step_Dev_Project_Update_Config({ project_path: './' }),
+  Step_Bun_Run({ cmd: ['bun', 'update', '--latest'], showlogs: false }),
+  Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
+  Step_FS_Clean_Directory(Builder.Dir.Out),
+  Step_Dev_Format({ showlogs: false }),
+  //
 );
 
-builder.setBeforeProcessingSteps();
+// These steps are run before each processing phase.
+Builder.SetBeforeProcessingSteps();
 
-builder.setProcessorModules(
-  Processor_HTML_CustomComponent(),
-  Processor_HTML_ImportConverter(),
-  Processor_UserscriptBundler({ sourcemap: 'none' }),
-  // skip files in @todo folder
-  Processor_BasicWriter([`**/*{.user}${ts_tsx_js_jsx}`, '**/index.html'], ['**/@todo/**/*']), //
+// Basic setup for a TypeScript powered project. TypeScript files that match
+// "*.module.ts" and "*.iife.ts" are bundled and written to the out folder.
+// The other TypeScript files do not produce bundles. Module ("*.module.ts")
+// files will not bundle other module files. Instead, they'll import whatever
+// exports are needed from other module files. IIFE ("*.iife.ts") files, on
+// the other hand, produce fully contained bundles. They do not import anything
+// from anywhere. Use them accordingly.
+
+// HTML custom components are a lightweight alternative to web components made
+// possible by the processors below.
+
+// The processors are run for every file that added them during every
+// processing phase.
+Builder.SetProcessorModules(
+  // Process the custom html components.
+  Processor_HTML_Custom_Component_Processor(),
+  // Bundle the userscripts.
+  Processor_TypeScript_UserScript_Bundler({ define: () => ({ 'process.env.DEVSERVERHOST': JSON.stringify(DEVSERVERHOST) }) }),
+  // Bundle the iife scripts.
+  Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.DEVSERVERHOST': JSON.stringify(DEVSERVERHOST) }), target: 'browser' }),
+  //
 );
 
-builder.setAfterProcessingSteps(
-  Step_GenerateLinks(),
-  Step_DevServer(), //
+// These steps are run after each processing phase.
+Builder.SetAfterProcessingSteps(
+  Step_Dev_Generate_Links(),
+  // During "dev" mode (when "--dev" is passed as an argument), the server
+  // will start running with hot refreshing if enabled in your index file.
+  Step_Dev_Server(),
+  //
 );
 
-builder.setCleanUpSteps();
+// These steps are run during the shutdown phase only.
+Builder.SetCleanUpSteps();
 
-await builder.start();
+await Builder.Start();

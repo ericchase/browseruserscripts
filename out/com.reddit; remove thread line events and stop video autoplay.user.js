@@ -1,0 +1,191 @@
+// ==UserScript==
+// @name        com.reddit: remove thread line events and stop video autoplay
+// @match       https://www.reddit.com/*
+// @version     1.0.0
+// @description 11/23/2024, 12:47:12 AM
+// @run-at      document-start
+// @grant       none
+// @homepageURL https://github.com/ericchase/browseruserscripts
+// ==/UserScript==
+
+// src/lib/ericchase/Core_Utility_Sleep.ts
+function Async_Core_Utility_Sleep(duration_ms) {
+  return new Promise((resolve) => setTimeout(() => {
+    resolve();
+  }, duration_ms));
+}
+
+// src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
+class Class_WebPlatform_DOM_Element_Added_Observer_Class {
+  constructor(config) {
+    config.include_existing_elements ??= true;
+    config.options ??= {};
+    config.options.subtree ??= true;
+    config.source ??= document.documentElement;
+    this.mutationObserver = new MutationObserver((mutationRecords) => {
+      for (const record of mutationRecords) {
+        if (record.target instanceof Element && record.target.matches(config.selector)) {
+          this.send(record.target);
+        }
+        const treeWalker = document.createTreeWalker(record.target, NodeFilter.SHOW_ELEMENT);
+        while (treeWalker.nextNode()) {
+          if (treeWalker.currentNode.matches(config.selector)) {
+            this.send(treeWalker.currentNode);
+          }
+        }
+      }
+    });
+    this.mutationObserver.observe(config.source, {
+      childList: true,
+      subtree: config.options.subtree ?? true
+    });
+    if (config.include_existing_elements === true) {
+      const treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT);
+      while (treeWalker.nextNode()) {
+        if (treeWalker.currentNode.matches(config.selector)) {
+          this.send(treeWalker.currentNode);
+        }
+      }
+    }
+  }
+  disconnect() {
+    this.mutationObserver.disconnect();
+    for (const callback of this.subscriptionSet) {
+      this.subscriptionSet.delete(callback);
+    }
+  }
+  subscribe(callback) {
+    this.subscriptionSet.add(callback);
+    let abort = false;
+    for (const element of this.matchSet) {
+      callback(element, () => {
+        this.subscriptionSet.delete(callback);
+        abort = true;
+      });
+      if (abort)
+        return () => {};
+    }
+    return () => {
+      this.subscriptionSet.delete(callback);
+    };
+  }
+  mutationObserver;
+  matchSet = new Set;
+  subscriptionSet = new Set;
+  send(element) {
+    if (!this.matchSet.has(element)) {
+      this.matchSet.add(element);
+      for (const callback of this.subscriptionSet) {
+        callback(element, () => {
+          this.subscriptionSet.delete(callback);
+        });
+      }
+    }
+  }
+}
+function WebPlatform_DOM_Element_Added_Observer_Class(config) {
+  return new Class_WebPlatform_DOM_Element_Added_Observer_Class(config);
+}
+
+// src/lib/ericchase/WebPlatform_Utility_Shadow_QuerySelector_Chain.ts
+function WebPlatform_Utility_Shadow_QuerySelector_Chain(source, ...selectors) {
+  if (selectors.length > 0) {
+    for (const selector of selectors) {
+      if (source instanceof Document || source instanceof DocumentFragment || source instanceof ShadowRoot) {
+        const match = source.querySelector(selector);
+        if (match !== null) {
+          source = match;
+          continue;
+        }
+      } else if (source instanceof Element) {
+        if (source.shadowRoot !== null) {
+          const match2 = source.shadowRoot.querySelector(selector);
+          if (match2 !== null) {
+            source = match2;
+            continue;
+          }
+        }
+        const match = source.querySelector(selector);
+        if (match !== null) {
+          source = match;
+          continue;
+        }
+      }
+      return;
+    }
+    if (source instanceof Document || source instanceof DocumentFragment || source instanceof Element) {
+      return source;
+    }
+  }
+  return;
+}
+
+// src/com.reddit; remove thread line events and stop video autoplay.user.ts
+var originalAttachShadow = Element.prototype.attachShadow;
+Element.prototype.attachShadow = function(options) {
+  const shadowRoot = originalAttachShadow.call(this, options);
+  if (this.matches("shreddit-comment")) {
+    processComment(this);
+  } else if (this.matches("shreddit-player-2")) {
+    processVideo(this);
+  }
+  return shadowRoot;
+};
+async function processComment(element) {
+  if (element.shadowRoot) {
+    const shadowRoot = element.shadowRoot;
+    WebPlatform_DOM_Element_Added_Observer_Class({
+      selector: 'div[data-testid="main-thread-line"]',
+      source: shadowRoot
+    }).subscribe((thread, unsubscribe) => {
+      unsubscribe();
+      thread.parentElement?.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+      }, true);
+    });
+    WebPlatform_DOM_Element_Added_Observer_Class({
+      selector: 'div[data-testid="branch-line"]',
+      source: shadowRoot
+    }).subscribe((thread, unsubscribe) => {
+      unsubscribe();
+      thread.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+      }, true);
+    });
+  }
+}
+async function processVideo(element) {
+  if (element.shadowRoot) {
+    const shadowRoot = element.shadowRoot;
+    WebPlatform_DOM_Element_Added_Observer_Class({
+      selector: "video",
+      source: shadowRoot
+    }).subscribe((video) => {
+      console.log("found", video);
+      video.addEventListener("play", playHandler);
+    });
+  }
+}
+function playHandler(event) {
+  if (event?.target instanceof HTMLVideoElement) {
+    const video = event.target;
+    video.removeEventListener("play", playHandler);
+    const controls = WebPlatform_Utility_Shadow_QuerySelector_Chain(video.parentNode, "shreddit-media-ui", '[aria-label="Toggle playback"]');
+    setTimeout(async () => {
+      for (let i = 0;i < 5; i++) {
+        if (!video.paused) {
+          if (controls instanceof HTMLButtonElement) {
+            controls.click();
+          } else {
+            video.pause();
+          }
+        }
+        Async_Core_Utility_Sleep(50);
+      }
+    }, 50);
+  }
+}
