@@ -4,7 +4,7 @@ https://github.com/ericchase/browseruserscripts
 
 My personal UserScript library:
 
-- [Static Listing](https://ericchase.github.io/browseruserscripts/out/)
+- [Static Listing](https://ericchase.github.io/browseruserscripts/)
 
 UserScripts are used with extensions like Greasemonkey, Violentmonkey, and Tampermonkey to modify existing websites.
 
