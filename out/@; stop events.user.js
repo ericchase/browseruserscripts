@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        @; stop events
 // @match       *://*/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 7/22/2024, 11:01:15 AM
 // @run-at      document-start
 // @grant       none
-// @homepageURL https://github.com/ericchase/browser--userscripts
+// @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
 // src/@; stop events.user.ts

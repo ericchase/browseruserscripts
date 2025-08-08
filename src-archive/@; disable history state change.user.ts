@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        @; disable history state change
 // @match       *://*/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 7/10/2025, 8:34:27 PM
 // @run-at      document-start
 // @grant       none
-// @homepageURL https://github.com/ericchase/browser--userscripts
+// @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
 console.log('*: disable history state change');

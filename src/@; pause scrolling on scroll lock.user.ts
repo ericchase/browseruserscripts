@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        @; pause scrolling on scroll lock
 // @match       *://*/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 7/19/2024, 5:16:31 PM
 // @run-at      document-start
 // @grant       none
-// @homepageURL https://github.com/ericchase/browser--userscripts
+// @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
 let pauseScrolling = false;

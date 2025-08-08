@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name        @; stop malicious code
 // @match       *://*/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 8/8/2024, 12:25:48 AM
 // @run-at      document-start
 // @grant       none
-// @homepageURL https://github.com/ericchase/browser--userscripts
+// @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
 // src/@; stop malicious code.user.ts
