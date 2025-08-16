@@ -18,7 +18,7 @@ Builder.SetVerbosity(Builder.VERBOSITY._1_LOG);
 
 // These steps are run during the startup phase only.
 Builder.SetStartUpSteps(
-  Step_Dev_Project_Update_Config({ project_path: './' }),
+  Step_Dev_Project_Update_Config({ project_path: '.' }),
   Step_Bun_Run({ cmd: ['bun', 'update', '--latest'], showlogs: false }),
   Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
   Step_FS_Clean_Directory(Builder.Dir.Out),
@@ -45,16 +45,16 @@ Builder.SetBeforeProcessingSteps();
 Builder.SetProcessorModules(
   // Process the custom html components.
   Processor_HTML_Custom_Component_Processor(),
-  // Bundle the userscripts.
-  Processor_TypeScript_UserScript_Bundler({ define: () => ({ 'process.env.DEVSERVERHOST': JSON.stringify(DEVSERVERHOST) }) }),
   // Bundle the iife scripts.
-  Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.DEVSERVERHOST': JSON.stringify(DEVSERVERHOST) }), target: 'browser' }),
+  Processor_TypeScript_Generic_Bundler({ define: () => ({ 'process.env.DEVSERVERHOST': JSON.stringify(DEVSERVERHOST) }), target: 'browser' }, { bundler_mode: 'iife' }),
+  // Bundle the UserScripts.
+  Processor_TypeScript_UserScript_Bundler({ define: () => ({ 'process.env.DEVSERVERHOST': JSON.stringify(DEVSERVERHOST) }) }),
   //
 );
 
 // These steps are run after each processing phase.
 Builder.SetAfterProcessingSteps(
-  Step_Dev_Generate_Links({ dirpath: Builder.Dir.Out, pattern: `**/*{.user}${PATTERN.TS_TSX_JS_JSX}` }),
+  Step_Dev_Generate_Links({ dirpath: Builder.Dir.Out, pattern: `**/*{.user}${PATTERN.JS_JSX_TS_TSX}` }),
   // During "dev" mode (when "--dev" is passed as an argument), the server
   // will start running with hot refreshing if enabled in your index file.
   Step_Dev_Server(),

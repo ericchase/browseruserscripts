@@ -11,15 +11,12 @@ UserScripts are used with extensions like Greasemonkey, Violentmonkey, and Tampe
 - ~~[Violentmonkey for Chrome](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag/)~~ UserScript managers are no longer supported on Chrome.
 - [Violentmonkey for Firefox](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/)
 
-For more information, please check out the template project:
-
-- https://github.com/ericchase-library/ts-templates-browser-userscript
-
 ## Build Tools V4
 
 For information about my TypeScript library and Build Tools, please visit:
 
 - https://github.com/ericchase-library/ts-library
+- https://github.com/ericchase-library/ts-templates-browser-userscript
 
 ## Project Disclaimer
 

@@ -6,14 +6,8 @@ import { Builder } from '../../core/Builder.js';
 import { Logger } from '../../core/Logger.js';
 import { PATTERN } from '../../core/processor/Processor_TypeScript_Generic_Bundler.js';
 
-/**
- * External pattern cannot contain more than one "*" wildcard.
- *
- * @defaults
- * @param config.define `undefined`
- * @param config.env `"disable"`
- * @param config.sourcemap `'none'`
- */
+const PATTERN_USERSCRIPT = `{.user}${PATTERN.JS_JSX_TS_TSX}`;
+
 export function Processor_TypeScript_UserScript_Bundler(config?: Config): Builder.Processor {
   return new Class(config ?? {});
 }
@@ -27,19 +21,22 @@ class Class implements Builder.Processor {
     this.config.env ??= 'disable';
     this.config.sourcemap ??= 'none';
   }
+  async onStartUp(): Promise<void> {
+    this.config.env ??= 'disable';
+    this.config.sourcemap ??= 'none';
+  }
   async onAdd(files: Set<Builder.File>): Promise<void> {
     let trigger_reprocess = false;
     for (const file of files) {
       const query = file.src_path;
-      if (BunPlatform_Glob_Match(query, `**/*{.user}${PATTERN.TS_TSX_JS_JSX}`)) {
+      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN_USERSCRIPT)) {
         file.iswritable = true;
         file.out_path = NodePlatform_PathObject_Relative_Class(file.out_path).replaceExt('.js').join();
         file.addProcessor(this, this.onProcessUserScript);
         this.bundle_set.add(file);
         continue;
       }
-      if (BunPlatform_Glob_Match(query, `**/*${PATTERN.TS_TSX_JS_JSX}`)) {
-        file.iswritable = false;
+      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN.JS_JSX_TS_TSX)) {
         trigger_reprocess = true;
       }
     }
@@ -53,11 +50,11 @@ class Class implements Builder.Processor {
     let trigger_reprocess = false;
     for (const file of files) {
       const query = file.src_path;
-      if (BunPlatform_Glob_Match(query, `**/*{.user}${PATTERN.TS_TSX_JS_JSX}`)) {
+      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN_USERSCRIPT)) {
         this.bundle_set.delete(file);
         continue;
       }
-      if (BunPlatform_Glob_Match(query, `**/*${PATTERN.TS_TSX_JS_JSX}`)) {
+      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN.JS_JSX_TS_TSX)) {
         trigger_reprocess = true;
       }
     }
@@ -107,14 +104,17 @@ class Class implements Builder.Processor {
         }
       }
     } catch (error) {
-      this.channel.error(error, 'Bundle Error');
+      this.channel.error(error, 'UserScript Bundle Error');
     }
   }
 }
 type Options = Parameters<typeof Bun.build>[0];
 interface Config {
+  /** @default undefined */
   define?: Options['define'] | (() => Options['define']);
+  /** @default 'disable' */
   env?: Options['env'];
+  /** @default 'none' */
   sourcemap?: Options['sourcemap'];
 }
 

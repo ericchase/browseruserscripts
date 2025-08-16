@@ -5,6 +5,7 @@ import { Async_BunPlatform_File_Write_Bytes } from '../../src/lib/ericchase/BunP
 import { Async_BunPlatform_File_Write_Text } from '../../src/lib/ericchase/BunPlatform_File_Write_Text.js';
 import { Core_Console_Error } from '../../src/lib/ericchase/Core_Console_Error.js';
 import { Core_Map_Get_Or_Default } from '../../src/lib/ericchase/Core_Map_Get_Or_Default.js';
+import { Class_Core_Promise_Deferred_Class, Core_Promise_Deferred_Class } from '../../src/lib/ericchase/Core_Promise_Deferred_Class.js';
 import { Core_String_Split_Lines } from '../../src/lib/ericchase/Core_String_Split_Lines.js';
 import { Core_Utility_Decode_Bytes } from '../../src/lib/ericchase/Core_Utility_Decode_Bytes.js';
 import { NODE_PATH } from '../../src/lib/ericchase/NodePlatform.js';
@@ -20,6 +21,8 @@ await AddLoggerOutputDirectory('cache');
 namespace _errors {
   export const _dependency_cycle_ = (p0: string, p1: string) => `Dependency Cycle: Between upstream "${p0}" and downstream "${p1}"!`;
   export const _dependency_cycle_self_ = (p0: string) => `Dependency Cycle: "${p0}" - A file cannot depend on itself!`;
+  export const _error_reading_file_ = (p0: string) => `Error reading file "${p0}"!`;
+  export const _error_writing_file_ = (p0: string) => `Error writing file "${p0}"!`;
   export const _path_does_not_exist_ = (p0: string) => `Path "${p0}" does not exist!`;
   export const _upstream_does_not_exist_ = (p0: string) => `Upstream path "${p0}" does not exist!`;
   export const _upstream_not_in_src_ = (p0: string) => `Upstream path "${p0}" must reside in src directory!`;
@@ -82,7 +85,10 @@ export namespace Builder {
     constructor(
       public src_path: string,
       public out_path: string,
-    ) {}
+    ) {
+      this.src_path = NODE_PATH.join(src_path);
+      this.out_path = NODE_PATH.join(out_path);
+    }
     $data: { bytes?: Uint8Array; text?: string } = { bytes: undefined, text: undefined };
     $processor_list: { processor: Builder.Processor; method: Builder.ProcessorMethod }[] = [];
     /** When true, file contents have been modified during the current processing phase. */
@@ -138,6 +144,7 @@ export namespace Builder {
           if (bytes !== undefined) {
             this.$data.bytes = bytes;
           } else {
+            Err(error, _errors._error_reading_file_(this.src_path));
             throw error;
           }
         } else {
@@ -155,7 +162,7 @@ export namespace Builder {
           if (text !== undefined) {
             this.$data.text = text;
           } else {
-            Err(error, _errors._path_does_not_exist_(this.src_path));
+            Err(error, _errors._error_reading_file_(this.src_path));
             throw new Error();
           }
         } else {
@@ -287,24 +294,25 @@ const set__error_paths = new Set<string>();
 
 let unwatch_source_directory: () => void;
 let unlock_stdin_reader: () => void;
-let waiting_for_cleanup = false;
+let busytask: Class_Core_Promise_Deferred_Class<void> = Core_Promise_Deferred_Class();
+let quitting = false;
 
 async function Init() {
+  busytask = Core_Promise_Deferred_Class();
   // Secure Locks
   {
     FILESTATS.LockTable();
-    // FILESTATS.RemoveAllStats();
     CACHELOCK.TryLockEach(['Build', 'Format']);
   }
-
   // Setup Stdin Reader
   {
     unlock_stdin_reader = NodePlatform_Shell_StdIn_LockReader();
-    NodePlatform_Shell_StdIn_AddListener((bytes, text, removeSelf) => {
+    NodePlatform_Shell_StdIn_AddListener(async (bytes, text, removeSelf) => {
       if (text === 'q') {
         removeSelf();
         Log(_logs._user_command_('Quit'));
-        waiting_for_cleanup = true;
+        await busytask.promise;
+        await Async_CleanUp();
       }
     });
     NodePlatform_Shell_StdIn_AddListener(async (bytes, text, removeSelf) => {
@@ -316,7 +324,6 @@ async function Init() {
     });
     NodePlatform_Shell_StdIn_StartReaderInRawMode();
   }
-
   await Async_ScanSourceFolder();
   await Async_StartUp();
   await Async_BeforeSteps();
@@ -326,18 +333,23 @@ async function Init() {
   switch (_mode) {
     case Builder.MODE.BUILD:
       await Async_CleanUp();
+      busytask.resolve();
       break;
     case Builder.MODE.DEV:
+      busytask.resolve();
       unwatch_source_directory?.();
       SetupWatcher();
       NodePlatform_Shell_StdIn_AddListener(async (bytes, text, removeSelf) => {
         if (text === 'r') {
+          await busytask.promise;
+          busytask = Core_Promise_Deferred_Class();
           await Async_ScanSourceFolder();
           await Async_BeforeSteps();
           await Async_Process();
           await Async_AfterSteps();
           unwatch_source_directory?.();
           SetupWatcher();
+          busytask.resolve();
         }
       });
       break;
@@ -363,29 +375,31 @@ async function Async_ScanSourceFolder() {
 }
 
 function SetupWatcher() {
-  unwatch_source_directory = Cacher_Watch_Directory(Builder.Dir.Src, 250, 2_000, async (added, deleted, modified) => {
-    for (const path of added) {
-      set__added_paths.add(path);
-    }
-    for (const path of deleted) {
-      set__deleted_paths.add(path);
-    }
-    for (const path of modified) {
-      set__modified_paths.add(path);
-    }
-    if (set__added_paths.size > 0 || set__deleted_paths.size > 0 || set__modified_paths.size > 0) {
-      for (const path of set__error_paths) {
+  unwatch_source_directory = Cacher_Watch_Directory(Builder.Dir.Src, 250, async (added, deleted, modified) => {
+    if (quitting === false) {
+      for (const path of added) {
         set__added_paths.add(path);
+      }
+      for (const path of deleted) {
         set__deleted_paths.add(path);
+      }
+      for (const path of modified) {
         set__modified_paths.add(path);
       }
-      set__error_paths.clear();
-      await Async_BeforeSteps();
-      await Async_Process();
-      await Async_AfterSteps();
-    }
-    if (waiting_for_cleanup === true) {
-      await Async_CleanUp();
+      if (set__added_paths.size > 0 || set__deleted_paths.size > 0 || set__modified_paths.size > 0) {
+        for (const path of set__error_paths) {
+          set__added_paths.add(path);
+          set__deleted_paths.add(path);
+          set__modified_paths.add(path);
+        }
+        set__error_paths.clear();
+        await busytask.promise;
+        busytask = Core_Promise_Deferred_Class();
+        await Async_BeforeSteps();
+        await Async_Process();
+        await Async_AfterSteps();
+        busytask.resolve();
+      }
     }
   });
 }
@@ -529,12 +543,17 @@ async function Async_Process() {
       // Write Files
       for (const file of set__files_to_add) {
         if (file.iswritable === true) {
-          if (file.$data.text !== undefined) {
-            await Async_BunPlatform_File_Write_Text(file.out_path, file.$data.text);
-          } else {
-            await Async_BunPlatform_File_Write_Bytes(file.out_path, await file.getBytes());
+          try {
+            if (file.$data.text !== undefined) {
+              await Async_BunPlatform_File_Write_Text(file.out_path, file.$data.text);
+            } else {
+              await Async_BunPlatform_File_Write_Bytes(file.out_path, await file.getBytes());
+            }
+            file.ismodified = false;
+          } catch (error) {
+            Err(error, _errors._error_writing_file_(file.src_path));
+            caught_error = true;
           }
-          file.ismodified = false;
         }
       }
     }
@@ -594,12 +613,17 @@ async function Async_Process() {
       // Write Files
       for (const file of set__files_to_update) {
         if (file.iswritable === true && file.ismodified === true) {
-          if (file.$data.text !== undefined) {
-            await Async_BunPlatform_File_Write_Text(file.out_path, file.$data.text);
-          } else {
-            await Async_BunPlatform_File_Write_Bytes(file.out_path, await file.getBytes());
+          try {
+            if (file.$data.text !== undefined) {
+              await Async_BunPlatform_File_Write_Text(file.out_path, file.$data.text);
+            } else {
+              await Async_BunPlatform_File_Write_Bytes(file.out_path, await file.getBytes());
+            }
+            file.ismodified = false;
+          } catch (error) {
+            Err(error, _errors._error_writing_file_(file.src_path));
+            caught_error = true;
           }
-          file.ismodified = false;
         }
       }
     }
@@ -639,6 +663,8 @@ async function Async_AfterSteps() {
 
 async function Async_CleanUp() {
   Log(_logs._phase_begin_('CleanUp'));
+
+  quitting = true;
 
   unwatch_source_directory?.();
 
@@ -746,7 +772,7 @@ async function KillChildren() {
 
 function KillProcess(pid: number) {
   return new Promise<string>((resolve, reject) => {
-    treekill(pid, 'SIGKILL', (error) => {
+    treekill(pid, 'SIGTERM', (error) => {
       if (error) {
         reject(error);
       } else {
