@@ -73,9 +73,8 @@ sync.ffs_db
 
 ## Build Tools Specific
 
+**/.git.git/
 /cache/
 /coverage/report/
 
 ## Project Specific
-
-

@@ -2,7 +2,7 @@
 // @name        com.reddit; remove thread line events and stop video autoplay
 // @match       https://www.reddit.com/*
 // @version     1.0.0
-// @description 11/23/2024, 12:47:12 AM
+// @description 2024/11/23, 12:47:12 AM
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

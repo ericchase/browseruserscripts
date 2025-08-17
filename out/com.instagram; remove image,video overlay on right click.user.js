@@ -2,7 +2,7 @@
 // @name        com.instagram; remove image,video overlay on right click
 // @match       *://*.instagram.com/*
 // @version     1.0.2
-// @description 1/28/2022, 6:07:39 AM
+// @description 2022/01/28, 6:07:39 AM
 // @run-at      document-end
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

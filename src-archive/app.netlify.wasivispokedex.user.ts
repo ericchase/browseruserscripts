@@ -2,7 +2,7 @@
 // @name        app.netlify.wasivispokedex; favorite all pokemon
 // @match       https://wasivispokedex.netlify.app/*
 // @version     1.0.0
-// @description 8/31/2024, 9:52:16 AM
+// @description 2024/08/31, 9:52:16 AM
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

@@ -2,7 +2,7 @@
 // @name        com.chatgpt; insert preference on first message
 // @match       *://chatgpt.com/*
 // @version     1.0.0
-// @description 7/12/2025, 9:28:02 PM
+// @description 2025/07/12, 9:28:02 PM
 // @run-at      document-end
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

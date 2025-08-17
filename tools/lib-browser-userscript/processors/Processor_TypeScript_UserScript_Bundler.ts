@@ -1,6 +1,6 @@
+import { Async_BunPlatform_File_Write_Text } from '../../../src/lib/ericchase/BunPlatform_File_Write_Text.js';
 import { BunPlatform_Glob_Match } from '../../../src/lib/ericchase/BunPlatform_Glob_Match.js';
 import { NODE_PATH } from '../../../src/lib/ericchase/NodePlatform.js';
-import { Async_NodePlatform_File_Write_Text } from '../../../src/lib/ericchase/NodePlatform_File_Write_Text.js';
 import { NodePlatform_PathObject_Relative_Class } from '../../../src/lib/ericchase/NodePlatform_PathObject_Relative_Class.js';
 import { Builder } from '../../core/Builder.js';
 import { Logger } from '../../core/Logger.js';
@@ -17,10 +17,7 @@ class Class implements Builder.Processor {
 
   bundle_set = new Set<Builder.File>();
 
-  constructor(readonly config: Config) {
-    this.config.env ??= 'disable';
-    this.config.sourcemap ??= 'none';
-  }
+  constructor(readonly config: Config) {}
   async onStartUp(): Promise<void> {
     this.config.env ??= 'disable';
     this.config.sourcemap ??= 'none';
@@ -29,14 +26,14 @@ class Class implements Builder.Processor {
     let trigger_reprocess = false;
     for (const file of files) {
       const query = file.src_path;
-      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN_USERSCRIPT)) {
+      if (BunPlatform_Glob_Match(query, `${Builder.Dir.Src}/**/*${PATTERN_USERSCRIPT}`)) {
         file.iswritable = true;
         file.out_path = NodePlatform_PathObject_Relative_Class(file.out_path).replaceExt('.js').join();
         file.addProcessor(this, this.onProcessUserScript);
         this.bundle_set.add(file);
         continue;
       }
-      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN.JS_JSX_TS_TSX)) {
+      if (BunPlatform_Glob_Match(query, `${Builder.Dir.Src}/**/*${PATTERN.JS_JSX_TS_TSX}`)) {
         trigger_reprocess = true;
       }
     }
@@ -50,11 +47,11 @@ class Class implements Builder.Processor {
     let trigger_reprocess = false;
     for (const file of files) {
       const query = file.src_path;
-      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN_USERSCRIPT)) {
+      if (BunPlatform_Glob_Match(query, `${Builder.Dir.Src}/**/*${PATTERN_USERSCRIPT}`)) {
         this.bundle_set.delete(file);
         continue;
       }
-      if (BunPlatform_Glob_Match(query, Builder.Dir.Src + '/' + '**/*' + PATTERN.JS_JSX_TS_TSX)) {
+      if (BunPlatform_Glob_Match(query, `${Builder.Dir.Src}/**/*${PATTERN.JS_JSX_TS_TSX}`)) {
         trigger_reprocess = true;
       }
     }
@@ -67,9 +64,15 @@ class Class implements Builder.Processor {
 
   async onProcessUserScript(file: Builder.File): Promise<void> {
     try {
+      const define: Options['define'] = {};
+      for (const [key, value] of Object.entries(this.config.define?.() ?? {})) {
+        define[key] = value === undefined ? 'undefined' : JSON.stringify(value);
+      }
+      define['import.meta.url'] = 'undefined';
+
       const results = await ProcessBuildResults(
         Bun.build({
-          define: typeof this.config.define === 'function' ? this.config.define() : this.config.define,
+          define,
           entrypoints: [file.src_path],
           env: this.config.env,
           format: 'esm',
@@ -99,7 +102,7 @@ class Class implements Builder.Processor {
             // handled above
             break;
           default:
-            await Async_NodePlatform_File_Write_Text(NODE_PATH.join(NODE_PATH.dirname(file.out_path), artifact.path), await artifact.blob.text(), true);
+            await Async_BunPlatform_File_Write_Text(NODE_PATH.join(NODE_PATH.dirname(file.out_path), artifact.path), await artifact.blob.text());
             break;
         }
       }
@@ -111,7 +114,7 @@ class Class implements Builder.Processor {
 type Options = Parameters<typeof Bun.build>[0];
 interface Config {
   /** @default undefined */
-  define?: Options['define'] | (() => Options['define']);
+  define?: () => Record<string, any>;
   /** @default 'disable' */
   env?: Options['env'];
   /** @default 'none' */
@@ -125,7 +128,7 @@ class BuildArtifact {
   loader: 'js' | 'jsx' | 'ts' | 'tsx' | 'json' | 'toml' | 'file' | 'napi' | 'wasm' | 'text' | 'css' | 'html';
   path: string;
   sourcemap: BuildArtifact | null;
-  constructor(public artifact: Bun.BuildArtifact) {
+  constructor(readonly artifact: Bun.BuildArtifact) {
     this.blob = artifact;
     this.hash = artifact.hash;
     this.kind = artifact.kind;

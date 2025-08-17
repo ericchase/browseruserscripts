@@ -2,7 +2,7 @@
 // @name        @; scroll volume
 // @match       *://*/*
 // @version     1.0.1
-// @description 11/4/2023, 11:40:41 PM
+// @description 2023/11/04, 11:40:41 PM
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

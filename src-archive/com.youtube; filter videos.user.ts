@@ -2,7 +2,7 @@
 // @name        com.youtube; filter videos
 // @match       *://*.youtube.*/*
 // @version     1.0.2
-// @description 5/22/2022, 10:37:37 PM
+// @description 2022/05/22, 10:37:37 PM
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
