@@ -9,9 +9,9 @@
 // ==/UserScript==
 
 // src/@; stop redirects.user.ts
-document.addEventListener("beforeunload", function(e) {
+document.addEventListener('beforeunload', function (e) {
   e.preventDefault();
   e.stopImmediatePropagation();
   e.stopPropagation();
-  return "...";
+  return '...';
 });

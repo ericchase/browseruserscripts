@@ -10,7 +10,7 @@
 
 // src/lib/ericchase/Core_Console_Log.ts
 function Core_Console_Log(...items) {
-  console["log"](...items);
+  console['log'](...items);
 }
 
 // src/lib/ericchase/Core_JSON_Parse_Raw_String.ts
@@ -21,8 +21,8 @@ function Core_JSON_Parse_Raw_String(str) {
 // src/lib/ericchase/Core_String_Get_Left_Margin_Size.ts
 function Core_String_Get_Left_Margin_Size(text) {
   let i = 0;
-  for (;i < text.length; i++) {
-    if (text[i] !== " ") {
+  for (; i < text.length; i++) {
+    if (text[i] !== ' ') {
       break;
     }
   }
@@ -51,7 +51,10 @@ function Core_String_Split_Lines(text, remove_empty_items = false) {
 // src/lib/ericchase/Core_String_Remove_WhiteSpace_Only_Lines_From_Top_And_Bottom.ts
 function Core_String_Remove_WhiteSpace_Only_Lines_From_Top_And_Bottom(text) {
   const lines = Core_String_Split_Lines(text);
-  return lines.slice(lines.findIndex((line) => Core_String_Line_Is_Only_WhiteSpace(line) === false), 1 + lines.findLastIndex((line) => Core_String_Line_Is_Only_WhiteSpace(line) === false));
+  return lines.slice(
+    lines.findIndex((line) => Core_String_Line_Is_Only_WhiteSpace(line) === false),
+    1 + lines.findLastIndex((line) => Core_String_Line_Is_Only_WhiteSpace(line) === false),
+  );
 }
 
 // src/lib/ericchase/Core_String_Trim_BlockText.ts
@@ -62,11 +65,11 @@ function Core_String_Trim_BlockText(text, options) {
   options.left_margin_size ??= 0;
   const nonwhitespace_lines = Core_String_Remove_WhiteSpace_Only_Lines_From_Top_And_Bottom(text);
   if (nonwhitespace_lines.length === 0) {
-    return "";
+    return '';
   }
   const out = [];
-  for (let i = 0;i < options.empty_lines_before_count; i++) {
-    out.push("");
+  for (let i = 0; i < options.empty_lines_before_count; i++) {
+    out.push('');
   }
   let left_trim_size = Core_String_Get_Left_Margin_Size(nonwhitespace_lines[0]);
   for (const line of nonwhitespace_lines.slice(1)) {
@@ -74,21 +77,23 @@ function Core_String_Trim_BlockText(text, options) {
       left_trim_size = Math.min(left_trim_size, Core_String_Get_Left_Margin_Size(line));
     }
   }
-  const left_margin_text = " ".repeat(options.left_margin_size);
+  const left_margin_text = ' '.repeat(options.left_margin_size);
   for (const line of nonwhitespace_lines) {
     out.push(left_margin_text + line.slice(left_trim_size));
   }
-  for (let i = 0;i < options.empty_lines_after_count; i++) {
-    out.push("");
+  for (let i = 0; i < options.empty_lines_after_count; i++) {
+    out.push('');
   }
   return out.join(Core_JSON_Parse_Raw_String(String.raw`\n`));
 }
 
 // src/lib/ericchase/Core_Utility_Sleep.ts
 function Async_Core_Utility_Sleep(duration_ms) {
-  return new Promise((resolve) => setTimeout(() => {
-    resolve();
-  }, duration_ms));
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      resolve();
+    }, duration_ms),
+  );
 }
 
 // src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
@@ -110,7 +115,7 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
     });
     this.mutationObserver.observe(config.source ?? document.documentElement, {
       childList: true,
-      subtree: config.options.subtree ?? true
+      subtree: config.options.subtree ?? true,
     });
     if ((config.include_existing_elements ?? true) === true) {
       const treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT);
@@ -135,16 +140,15 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
         this.subscriptionSet.delete(callback);
         abort = true;
       });
-      if (abort)
-        return () => {};
+      if (abort) return () => {};
     }
     return () => {
       this.subscriptionSet.delete(callback);
     };
   }
   mutationObserver;
-  matchSet = new Set;
-  subscriptionSet = new Set;
+  matchSet = new Set();
+  subscriptionSet = new Set();
   send(element) {
     if (!this.matchSet.has(element)) {
       this.matchSet.add(element);
@@ -241,22 +245,22 @@ function WebPlatform_Utility_Download(data, filename) {
       return URL.createObjectURL(data.blob);
     }
     if (data.bytes !== undefined) {
-      return URL.createObjectURL(new Blob([data.bytes.slice()], { type: "application/octet-stream;charset=utf-8" }));
+      return URL.createObjectURL(new Blob([data.bytes.slice()], { type: 'application/octet-stream;charset=utf-8' }));
     }
     if (data.json !== undefined) {
-      return URL.createObjectURL(new Blob([data.json], { type: "application/json;charset=utf-8" }));
+      return URL.createObjectURL(new Blob([data.json], { type: 'application/json;charset=utf-8' }));
     }
     if (data.text !== undefined) {
-      return URL.createObjectURL(new Blob([data.text], { type: "text/plain;charset=utf-8" }));
+      return URL.createObjectURL(new Blob([data.text], { type: 'text/plain;charset=utf-8' }));
     }
     if (data.url !== undefined) {
       return data.url;
     }
   })();
   if (dataurl !== undefined) {
-    const anchor = document.createElement("a");
-    anchor.setAttribute("download", filename);
-    anchor.setAttribute("href", dataurl);
+    const anchor = document.createElement('a');
+    anchor.setAttribute('download', filename);
+    anchor.setAttribute('href', dataurl);
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
@@ -265,15 +269,15 @@ function WebPlatform_Utility_Download(data, filename) {
 
 // src/lib/ericchase/WebPlatform_Utility_Open_Window.ts
 function WebPlatform_Utility_Open_Window(url, cb_load, cb_unload) {
-  const proxy = window.open(url, "_blank");
+  const proxy = window.open(url, '_blank');
   if (proxy) {
     if (cb_load) {
-      proxy.addEventListener("load", (event) => {
+      proxy.addEventListener('load', (event) => {
         cb_load(proxy, event);
       });
     }
     if (cb_unload) {
-      proxy.addEventListener("unload", (event) => {
+      proxy.addEventListener('unload', (event) => {
         cb_unload(proxy, event);
       });
     }
@@ -293,10 +297,10 @@ async function main() {
     }
   });
   WebPlatform_DOM_Element_Added_Observer_Class({
-    selector: "table#songlist"
+    selector: 'table#songlist',
   }).subscribe(async (tableSonglist) => {
     if (tableSonglist instanceof HTMLTableElement) {
-      for (const atag_song of WebPlatform_NodeList_Reference_Class(tableSonglist.querySelectorAll(".playlistDownloadSong > a")).as(HTMLAnchorElement)) {
+      for (const atag_song of WebPlatform_NodeList_Reference_Class(tableSonglist.querySelectorAll('.playlistDownloadSong > a')).as(HTMLAnchorElement)) {
         jobQueue.add(() => getSongUris(atag_song));
       }
       await jobQueue.done;
@@ -308,26 +312,26 @@ function getSongUris(anchorSong) {
   return new Promise((resolve, reject) => {
     WebPlatform_Utility_Open_Window(anchorSong.href, async (proxy) => {
       try {
-        let albumName = "";
-        let trackName = "";
+        let albumName = '';
+        let trackName = '';
         const uris = [];
         WebPlatform_DOM_Element_Added_Observer_Class({
           source: proxy.document.documentElement,
-          selector: "#pageContent > p"
+          selector: '#pageContent > p',
         }).subscribe((element) => {
           const treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
           while (treeWalker.nextNode()) {
-            if (treeWalker.currentNode.nodeValue?.trim() === "Album name:") {
+            if (treeWalker.currentNode.nodeValue?.trim() === 'Album name:') {
               if (treeWalker.nextNode()) {
-                albumName = treeWalker.currentNode.nodeValue?.trim() ?? "";
+                albumName = treeWalker.currentNode.nodeValue?.trim() ?? '';
                 break;
               }
             }
           }
           while (treeWalker.nextNode()) {
-            if (treeWalker.currentNode.nodeValue?.trim() === "Song name:") {
+            if (treeWalker.currentNode.nodeValue?.trim() === 'Song name:') {
               if (treeWalker.nextNode()) {
-                trackName = treeWalker.currentNode.nodeValue?.trim() ?? "";
+                trackName = treeWalker.currentNode.nodeValue?.trim() ?? '';
                 break;
               }
             }
@@ -335,7 +339,7 @@ function getSongUris(anchorSong) {
         });
         WebPlatform_DOM_Element_Added_Observer_Class({
           source: proxy.document.documentElement,
-          selector: ".songDownloadLink"
+          selector: '.songDownloadLink',
         }).subscribe((element) => {
           if (element?.parentElement?.href) {
             uris.push(element.parentElement.href);
@@ -351,7 +355,7 @@ function getSongUris(anchorSong) {
   });
 }
 function generateDownloaderScript(trackList) {
-  const albumMap = new Map;
+  const albumMap = new Map();
   for (const details of trackList) {
     if (!albumMap.has(details.albumName)) {
       albumMap.set(details.albumName, []);
@@ -419,14 +423,13 @@ class JobQueue {
   get done() {
     return new Promise((resolve) => {
       this.runningCount.subscribe((count) => {
-        if (count === 0)
-          resolve();
+        if (count === 0) resolve();
       });
     });
   }
   async reset() {
-    if (this.running === true || await this.runningCount.get() > 0) {
-      throw "Warning: Wait for running jobs to finish before calling reset. `await JobQueue.done;`";
+    if (this.running === true || (await this.runningCount.get()) > 0) {
+      throw 'Warning: Wait for running jobs to finish before calling reset. `await JobQueue.done;`';
     }
     this.aborted = false;
     this.completionCount = 0;
@@ -453,7 +456,7 @@ class JobQueue {
   results = [];
   running = false;
   runningCount = new Store(0);
-  subscriptionSet = new Set;
+  subscriptionSet = new Set();
   run() {
     if (this.aborted === false && this.queueIndex < this.queue.length) {
       const { fn, tag } = this.queue[this.queueIndex++];
@@ -499,7 +502,7 @@ class Store {
   initialValue;
   notifyOnChangeOnly;
   currentValue;
-  subscriptionSet = new Set;
+  subscriptionSet = new Set();
   constructor(initialValue, notifyOnChangeOnly = false) {
     this.initialValue = initialValue;
     this.notifyOnChangeOnly = notifyOnChangeOnly;
@@ -522,8 +525,7 @@ class Store {
     });
   }
   set(value) {
-    if (this.notifyOnChangeOnly && this.currentValue === value)
-      return;
+    if (this.notifyOnChangeOnly && this.currentValue === value) return;
     this.currentValue = value;
     for (const callback of this.subscriptionSet) {
       callback(value, () => {

@@ -27,7 +27,7 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
     });
     this.mutationObserver.observe(config.source ?? document.documentElement, {
       childList: true,
-      subtree: config.options.subtree ?? true
+      subtree: config.options.subtree ?? true,
     });
     if ((config.include_existing_elements ?? true) === true) {
       const treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT);
@@ -52,16 +52,15 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
         this.subscriptionSet.delete(callback);
         abort = true;
       });
-      if (abort)
-        return () => {};
+      if (abort) return () => {};
     }
     return () => {
       this.subscriptionSet.delete(callback);
     };
   }
   mutationObserver;
-  matchSet = new Set;
-  subscriptionSet = new Set;
+  matchSet = new Set();
+  subscriptionSet = new Set();
   send(element) {
     if (!this.matchSet.has(element)) {
       this.matchSet.add(element);
@@ -78,14 +77,14 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
 }
 
 // src/com.studiokhimera.uberquest; collect img urls.user.ts
-var url_set = new Set;
+var url_set = new Set();
 console.log(url_set);
 WebPlatform_DOM_Element_Added_Observer_Class({ selector: 'a > img[src*="/next-hover.png"]' }).subscribe((next, unsubscribe) => {
   if (next instanceof HTMLImageElement) {
     unsubscribe();
-    WebPlatform_DOM_Element_Added_Observer_Class({ selector: "img" }).subscribe((element, unsubscribe2) => {
+    WebPlatform_DOM_Element_Added_Observer_Class({ selector: 'img' }).subscribe((element, unsubscribe2) => {
       if (element instanceof HTMLImageElement) {
-        if (element.src.endsWith(".webp") && url_set.has(element.src) === false) {
+        if (element.src.endsWith('.webp') && url_set.has(element.src) === false) {
           url_set.add(element.src);
         }
       }

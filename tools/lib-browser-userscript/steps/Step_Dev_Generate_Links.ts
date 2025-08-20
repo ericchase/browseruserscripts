@@ -2,6 +2,7 @@ import { Async_BunPlatform_File_Write_Text } from '../../../src/lib/ericchase/Bu
 import { Async_BunPlatform_Glob_Scan_Generator } from '../../../src/lib/ericchase/BunPlatform_Glob_Scan_Generator.js';
 import { NODE_PATH } from '../../../src/lib/ericchase/NodePlatform.js';
 import { Builder } from '../../core/Builder.js';
+import { HTML_UTIL } from '../../core/bundle/html-util/html-util.js';
 import { Logger } from '../../core/Logger.js';
 
 export function Step_Dev_Generate_Links(config: Config): Builder.Step {
@@ -15,20 +16,37 @@ class Class implements Builder.Step {
   async onStartUp(): Promise<void> {}
   async onRun(): Promise<void> {
     this.channel.log('Generate Links');
-    const atags: string[] = [];
-    for await (const entry of Async_BunPlatform_Glob_Scan_Generator(this.config.dirpath, this.config.pattern)) {
-      atags.push(`<a href="./${entry}" target="_blank">${entry}</a>`);
-    }
-    const file__index = Builder.File.Get(NODE_PATH.join(Builder.Dir.Src, 'index.html'));
-    if (file__index !== undefined) {
-      file__index.iswritable = true;
-      // file.setText only works inside processors, so we need to directly write the file here
-      await Async_BunPlatform_File_Write_Text(file__index.out_path, (await file__index.getText()).replace('<links-placeholder />', atags.join('\n    ')));
+    const atag_list = await async_getATags(this.config.dirpath, this.config.pattern);
+    const atag_list_node = HTML_UTIL.ParseDocument(atag_list.join('\n'));
+    const file = Builder.File.Get(NODE_PATH.join(Builder.Dir.Src, 'index.html'));
+    if (file !== undefined) {
+      const source_html = (await file.getText()).trim();
+      const source_node = HTML_UTIL.ParseDocument(source_html, { recognize_self_closing_tags: true }); // html only supports self-closing void tags
+      const placeholder_node = HTML_UTIL.QuerySelector(source_node, 'links-placeholder');
+      if (placeholder_node !== undefined) {
+        HTML_UTIL.ReplaceNode(placeholder_node, atag_list_node);
+        const output_html = HTML_UTIL.GetHTML(source_node);
+        await Async_BunPlatform_File_Write_Text(file.out_path, output_html);
+      } else {
+        this.channel.error(new Error(`Could not find "<links-placeholder>" element in "${Builder.Dir.Src}/index.html".`));
+      }
+    } else {
+      this.channel.error(new Error(`Could not find "${Builder.Dir.Src}/index.html" file.`));
     }
   }
   async onCleanUp(): Promise<void> {}
 }
 interface Config {
+  /** Target folder to scan. */
   dirpath: string;
+  /** Glob pattern to scan for. */
   pattern: string;
+}
+
+async function async_getATags(dirpath: string, pattern: string): Promise<string[]> {
+  const tags: string[] = [];
+  for await (const entry of Async_BunPlatform_Glob_Scan_Generator(dirpath, pattern)) {
+    tags.push(`<a href="./${entry}" target="_blank">${entry}</a>`);
+  }
+  return tags;
 }

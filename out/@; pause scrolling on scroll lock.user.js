@@ -11,13 +11,13 @@
 // src/@; pause scrolling on scroll lock.user.ts
 var pauseScrolling = false;
 var scrollAmount = 0;
-window.addEventListener("keydown", (evt) => {
-  if (evt.key === "ScrollLock") {
+window.addEventListener('keydown', (evt) => {
+  if (evt.key === 'ScrollLock') {
     pauseScrolling = !pauseScrolling;
     scrollAmount = document.documentElement.scrollTop;
   }
 });
-window.addEventListener("scroll", (evt) => {
+window.addEventListener('scroll', (evt) => {
   if (pauseScrolling === true) {
     evt.stopImmediatePropagation();
     evt.stopPropagation();

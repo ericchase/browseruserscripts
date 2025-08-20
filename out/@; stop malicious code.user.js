@@ -10,15 +10,15 @@
 
 // src/@; stop malicious code.user.ts
 var originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
-Object.defineProperty(HTMLCanvasElement.prototype, "toDataURL", {
+Object.defineProperty(HTMLCanvasElement.prototype, 'toDataURL', {
   configurable: false,
   writable: false,
   enumerable: true,
-  value: originalToDataURL
+  value: originalToDataURL,
 });
 console = Object.freeze(console);
 document = Object.freeze(document);
-window.addEventListener("beforeunload", (e) => {
+window.addEventListener('beforeunload', (e) => {
   e.preventDefault();
   return true;
 });
@@ -26,8 +26,12 @@ window.onbeforeunload = (e) => {
   e.preventDefault();
   return true;
 };
-document.documentElement.addEventListener("scroll", (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  event.stopImmediatePropagation();
-}, { passive: false });
+document.documentElement.addEventListener(
+  'scroll',
+  (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+  },
+  { passive: false },
+);

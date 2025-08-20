@@ -10,9 +10,11 @@
 
 // src/lib/ericchase/Core_Utility_Sleep.ts
 function Async_Core_Utility_Sleep(duration_ms) {
-  return new Promise((resolve) => setTimeout(() => {
-    resolve();
-  }, duration_ms));
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      resolve();
+    }, duration_ms),
+  );
 }
 
 // src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
@@ -34,7 +36,7 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
     });
     this.mutationObserver.observe(config.source ?? document.documentElement, {
       childList: true,
-      subtree: config.options.subtree ?? true
+      subtree: config.options.subtree ?? true,
     });
     if ((config.include_existing_elements ?? true) === true) {
       const treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT);
@@ -59,16 +61,15 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
         this.subscriptionSet.delete(callback);
         abort = true;
       });
-      if (abort)
-        return () => {};
+      if (abort) return () => {};
     }
     return () => {
       this.subscriptionSet.delete(callback);
     };
   }
   mutationObserver;
-  matchSet = new Set;
-  subscriptionSet = new Set;
+  matchSet = new Set();
+  subscriptionSet = new Set();
   send(element) {
     if (!this.matchSet.has(element)) {
       this.matchSet.add(element);
@@ -119,11 +120,11 @@ function WebPlatform_Utility_Shadow_QuerySelector_Chain(source, ...selectors) {
 
 // src/com.reddit; remove thread line events and stop video autoplay.user.ts
 var originalAttachShadow = Element.prototype.attachShadow;
-Element.prototype.attachShadow = function(options) {
+Element.prototype.attachShadow = function (options) {
   const shadowRoot = originalAttachShadow.call(this, options);
-  if (this.matches("shreddit-comment")) {
+  if (this.matches('shreddit-comment')) {
     processComment(this);
-  } else if (this.matches("shreddit-player-2")) {
+  } else if (this.matches('shreddit-player-2')) {
     processVideo(this);
   }
   return shadowRoot;
@@ -133,25 +134,33 @@ async function processComment(element) {
     const shadowRoot = element.shadowRoot;
     WebPlatform_DOM_Element_Added_Observer_Class({
       selector: 'div[data-testid="main-thread-line"]',
-      source: shadowRoot
+      source: shadowRoot,
     }).subscribe((thread, unsubscribe) => {
       unsubscribe();
-      thread.parentElement?.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-      }, true);
+      thread.parentElement?.addEventListener(
+        'click',
+        (event) => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+        },
+        true,
+      );
     });
     WebPlatform_DOM_Element_Added_Observer_Class({
       selector: 'div[data-testid="branch-line"]',
-      source: shadowRoot
+      source: shadowRoot,
     }).subscribe((thread, unsubscribe) => {
       unsubscribe();
-      thread.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-      }, true);
+      thread.addEventListener(
+        'click',
+        (event) => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+        },
+        true,
+      );
     });
   }
 }
@@ -159,21 +168,21 @@ async function processVideo(element) {
   if (element.shadowRoot) {
     const shadowRoot = element.shadowRoot;
     WebPlatform_DOM_Element_Added_Observer_Class({
-      selector: "video",
-      source: shadowRoot
+      selector: 'video',
+      source: shadowRoot,
     }).subscribe((video) => {
-      console.log("found", video);
-      video.addEventListener("play", playHandler);
+      console.log('found', video);
+      video.addEventListener('play', playHandler);
     });
   }
 }
 function playHandler(event) {
   if (event?.target instanceof HTMLVideoElement) {
     const video = event.target;
-    video.removeEventListener("play", playHandler);
-    const controls = WebPlatform_Utility_Shadow_QuerySelector_Chain(video.parentNode, "shreddit-media-ui", '[aria-label="Toggle playback"]');
+    video.removeEventListener('play', playHandler);
+    const controls = WebPlatform_Utility_Shadow_QuerySelector_Chain(video.parentNode, 'shreddit-media-ui', '[aria-label="Toggle playback"]');
     setTimeout(async () => {
-      for (let i = 0;i < 5; i++) {
+      for (let i = 0; i < 5; i++) {
         if (!video.paused) {
           if (controls instanceof HTMLButtonElement) {
             controls.click();

@@ -9,37 +9,40 @@
 // ==/UserScript==
 
 // src/com.chatgpt; insert preference on first message.user.js
-var preference_string = "When writing lists, never use emojis or emoticons.";
-var prompt_selector = "#prompt-textarea";
-var placeholder_selector = "p.placeholder";
-document.addEventListener("focus", focusHandler, true);
+var preference_string = 'When writing lists, never use emojis or emoticons.';
+var prompt_selector = '#prompt-textarea';
+var placeholder_selector = 'p.placeholder';
+document.addEventListener('focus', focusHandler, true);
 function focusHandler() {
-  if (new URL(location).pathname === "/") {
+  if (new URL(location).pathname === '/') {
     const prompt = document.querySelector(prompt_selector);
     if (prompt) {
       if (document.activeElement === prompt) {
         const placeholder = prompt.querySelector(placeholder_selector);
         if (placeholder) {
           {
-            const p = document.createElement("p");
+            const p = document.createElement('p');
             p.textContent = preference_string;
             placeholder.replaceWith(p);
           }
           {
-            const p = document.createElement("p");
+            const p = document.createElement('p');
             p.innerHTML = '<br class="ProseMirror-trailingBreak">';
             prompt.appendChild(p);
           }
           {
-            const p = document.createElement("p");
+            const p = document.createElement('p');
             p.innerHTML = '<br class="ProseMirror-trailingBreak">';
             prompt.appendChild(p);
           }
-        } else {}
+        } else {
+        }
         moveCursorToEnd(prompt);
       }
-    } else {}
-  } else {}
+    } else {
+    }
+  } else {
+  }
 }
 function moveCursorToEnd(contentEditableElement) {
   contentEditableElement.focus();

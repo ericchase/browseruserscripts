@@ -9,6 +9,6 @@
 // ==/UserScript==
 
 // src/@; stop selection hijacking.user.ts
-document.addEventListener("mousedown", function(evt) {
+document.addEventListener('mousedown', function (evt) {
   evt.stopImmediatePropagation();
 });

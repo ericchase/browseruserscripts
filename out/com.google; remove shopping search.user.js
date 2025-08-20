@@ -27,7 +27,7 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
     });
     this.mutationObserver.observe(config.source ?? document.documentElement, {
       childList: true,
-      subtree: config.options.subtree ?? true
+      subtree: config.options.subtree ?? true,
     });
     if ((config.include_existing_elements ?? true) === true) {
       const treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT);
@@ -52,16 +52,15 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
         this.subscriptionSet.delete(callback);
         abort = true;
       });
-      if (abort)
-        return () => {};
+      if (abort) return () => {};
     }
     return () => {
       this.subscriptionSet.delete(callback);
     };
   }
   mutationObserver;
-  matchSet = new Set;
-  subscriptionSet = new Set;
+  matchSet = new Set();
+  subscriptionSet = new Set();
   send(element) {
     if (!this.matchSet.has(element)) {
       this.matchSet.add(element);
@@ -80,10 +79,10 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
 // src/com.google; remove shopping search.user.ts
 async function main() {
   WebPlatform_DOM_Element_Added_Observer_Class({
-    selector: 'div[role="listitem"]'
+    selector: 'div[role="listitem"]',
   }).subscribe(async (element) => {
     if (element instanceof HTMLDivElement) {
-      if (element.textContent?.includes("Shopping") || element.textContent?.includes("News") || element.textContent?.includes("Forums") || element.textContent?.includes("Web")) {
+      if (element.textContent?.includes('Shopping') || element.textContent?.includes('News') || element.textContent?.includes('Forums') || element.textContent?.includes('Web')) {
         element.remove();
       }
     }

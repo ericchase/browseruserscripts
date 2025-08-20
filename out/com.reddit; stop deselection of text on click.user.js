@@ -9,6 +9,6 @@
 // ==/UserScript==
 
 // src/com.reddit; stop deselection of text on click.user.ts
-document.addEventListener("mousedown", (event) => {
+document.addEventListener('mousedown', (event) => {
   event.stopImmediatePropagation();
 });
