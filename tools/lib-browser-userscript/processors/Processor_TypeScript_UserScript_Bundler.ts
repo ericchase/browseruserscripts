@@ -4,7 +4,7 @@ import { NODE_PATH } from '../../../src/lib/ericchase/NodePlatform.js';
 import { NodePlatform_PathObject_Relative_Class } from '../../../src/lib/ericchase/NodePlatform_PathObject_Relative_Class.js';
 import { Builder } from '../../core/Builder.js';
 import { Logger } from '../../core/Logger.js';
-import { PATTERN } from '../../core/processor/Processor_TypeScript_Generic_Bundler.js';
+import { Class_BuildArtifact, PATTERN } from '../../core/processor/Processor_TypeScript_Generic_Bundler.js';
 
 const PATTERN_USERSCRIPT = `{.user}${PATTERN.JS_JSX_TS_TSX}`;
 
@@ -73,6 +73,7 @@ class Class implements Builder.Processor {
       const results = await ProcessBuildResults(
         Bun.build({
           define,
+          drop: this.config.drop,
           entrypoints: [file.src_path],
           env: this.config.env,
           format: 'esm',
@@ -102,50 +103,45 @@ class Class implements Builder.Processor {
             // handled above
             break;
           default:
-            await Async_BunPlatform_File_Write_Text(NODE_PATH.join(NODE_PATH.dirname(file.out_path), artifact.path), await artifact.blob.text());
+            await Async_BunPlatform_File_Write_Text(NODE_PATH.join(NODE_PATH.parse(file.out_path).dir, artifact.path), await artifact.blob.text());
             break;
         }
       }
     } catch (error) {
-      this.channel.error(error, 'UserScript Bundle Error');
+      this.channel.error(error, `UserScript Bundle Error, File: ${file.src_path}`);
     }
   }
 }
 type Options = Parameters<typeof Bun.build>[0];
 interface Config {
-  /** @default undefined */
+  /**
+   * Let's you define key value pairs as-is. The processor will call
+   * `JSON.stringify(value)` for you.
+   * @default undefined
+   */
   define?: () => Record<string, any>;
+  /**
+   * Can only drop built-in and unbounded global identifiers, such as `console`
+   * and `debugger`. Cannot drop any identifier that is defined in the final
+   * bundle. The only real use case I've seen for this is removing debugger
+   * statements and logging.
+   * @default undefined */
+  drop?: Options['drop'];
   /** @default 'disable' */
   env?: Options['env'];
   /** @default 'none' */
   sourcemap?: Options['sourcemap'];
 }
 
-class BuildArtifact {
-  blob: Blob;
-  hash: string | null;
-  kind: 'entry-point' | 'chunk' | 'asset' | 'sourcemap' | 'bytecode';
-  loader: 'js' | 'jsx' | 'ts' | 'tsx' | 'json' | 'toml' | 'file' | 'napi' | 'wasm' | 'text' | 'css' | 'html';
-  path: string;
-  sourcemap: BuildArtifact | null;
-  constructor(readonly artifact: Bun.BuildArtifact) {
-    this.blob = artifact;
-    this.hash = artifact.hash;
-    this.kind = artifact.kind;
-    this.loader = artifact.loader;
-    this.path = artifact.path;
-    this.sourcemap = artifact.sourcemap ? new BuildArtifact(artifact.sourcemap) : null;
-  }
-}
 async function ProcessBuildResults(buildtask: Promise<Bun.BuildOutput>): Promise<{
-  artifacts: BuildArtifact[];
+  artifacts: Class_BuildArtifact[];
   bundletext?: string;
   logs: Bun.BuildOutput['logs'];
   success: boolean;
 }> {
   const buildresults = await buildtask;
   const out: {
-    artifacts: BuildArtifact[];
+    artifacts: Class_BuildArtifact[];
     bundletext?: string;
     logs: Bun.BuildOutput['logs'];
     success: boolean;
@@ -162,7 +158,7 @@ async function ProcessBuildResults(buildtask: Promise<Bun.BuildOutput>): Promise
           out.bundletext = await artifact.text();
         }
       }
-      out.artifacts.push(new BuildArtifact(artifact));
+      out.artifacts.push(new Class_BuildArtifact(artifact));
     }
   }
   return out;
