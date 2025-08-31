@@ -59,6 +59,7 @@ interface Config {
   hide_live_streams: boolean;
   hide_mixes: boolean;
   hide_playlists: boolean;
+  hide_shorts: boolean;
   max_age: number;
   min_views: number;
   scan_video_recommendations: boolean;
@@ -74,6 +75,7 @@ setDefaultGMValue('channel_blocklist', []);
 setDefaultGMValue('hide_live_streams', false);
 setDefaultGMValue('hide_mixes', false);
 setDefaultGMValue('hide_playlists', false);
+setDefaultGMValue('hide_shorts', false);
 setDefaultGMValue('max_age', 0);
 setDefaultGMValue('min_views', 0);
 setDefaultGMValue('scan_video_recommendations', true);
@@ -114,6 +116,7 @@ class YouTubeVideoBlocker {
       hide_live_streams: GM_getValue('hide_live_streams', false),
       hide_mixes: GM_getValue('hide_mixes', false),
       hide_playlists: GM_getValue('hide_playlists', false),
+      hide_shorts: GM_getValue('hide_shorts', false),
 
       scan_video_recommendations: GM_getValue('scan_video_recommendations', true),
       scan_video_wall: GM_getValue('scan_video_wall', true),
@@ -186,6 +189,12 @@ class YouTubeVideoBlocker {
     if (this.config.hide_playlists === true) {
       if (info.type === 'playlist') {
         console.log('blocked: (hide_playlists)', info);
+        return true;
+      }
+    }
+    if (this.config.hide_shorts === true) {
+      if (info.type === 'shorts') {
+        console.log('blocked: (hide_shorts)', info);
         return true;
       }
     }
