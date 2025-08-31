@@ -8,7 +8,7 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
-// src/com.youtube; youtube video blocker.user.js
+// src/com.youtube; youtube video blocker.user.ts
 class Data {
   minViews = 1e4;
   maxDuration = 14;
