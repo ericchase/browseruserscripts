@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.youtube; youtube video blocker
 // @match       *://*.youtube.*/*
-// @version     2.0.0
+// @version     2.1.0
 // @description 2025/08/30 (https://addons.mozilla.org/en-US/firefox/addon/youtube-video-blocker/)
 // @run-at      document-idle
 // @grant       GM_getValue
