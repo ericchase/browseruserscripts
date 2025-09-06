@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.youtube; youtube video blocker
 // @match       *://*.youtube.*/*
-// @version     2.0.0
+// @version     2.1.0
 // @description 2025/08/30 (https://addons.mozilla.org/en-US/firefox/addon/youtube-video-blocker/)
 // @run-at      document-idle
 // @grant       GM_getValue
@@ -58,6 +58,7 @@ interface Config {
   channel_blocklist: Set<string>;
   hide_live_streams: boolean;
   hide_mixes: boolean;
+  hide_movies: boolean;
   hide_playlists: boolean;
   hide_shorts: boolean;
   max_age: number;
@@ -74,6 +75,7 @@ setDefaultGMValue('channel_allowlist', []);
 setDefaultGMValue('channel_blocklist', []);
 setDefaultGMValue('hide_live_streams', false);
 setDefaultGMValue('hide_mixes', false);
+setDefaultGMValue('hide_movies', false);
 setDefaultGMValue('hide_playlists', false);
 setDefaultGMValue('hide_shorts', false);
 setDefaultGMValue('max_age', 0);
@@ -115,6 +117,7 @@ class YouTubeVideoBlocker {
 
       hide_live_streams: GM_getValue('hide_live_streams', false),
       hide_mixes: GM_getValue('hide_mixes', false),
+      hide_movies: GM_getValue('hide_movies', false),
       hide_playlists: GM_getValue('hide_playlists', false),
       hide_shorts: GM_getValue('hide_shorts', false),
 
@@ -157,6 +160,12 @@ class YouTubeVideoBlocker {
   }
 
   shouldBlock(video: HTMLElement, info: VideoInfo): boolean {
+    if (this.config.hide_movies === true) {
+      if (info.type === 'movie') {
+        console.log('blocked: (hide_movies)', info);
+        return true;
+      }
+    }
     if (info.type === 'ad') {
       const element = video.querySelector('ytd-ad-slot-renderer');
       if (element instanceof HTMLElement) {
@@ -317,7 +326,7 @@ class VideoInfo {
   }
 }
 
-type VideoType = 'live_stream' | 'waiting_for_live_stream' | 'member_only' | 'playlist' | 'ad' | 'video' | 'shorts' | 'mix';
+type VideoType = 'movie' | 'live_stream' | 'waiting_for_live_stream' | 'member_only' | 'playlist' | 'ad' | 'video' | 'shorts' | 'mix';
 
 function getVideoAge(video: HTMLElement, type: VideoType): number | undefined {
   if (type === 'video' || type === 'member_only') {
@@ -419,6 +428,10 @@ function getVideoTitle(video: HTMLElement): string {
 }
 
 function getVideoType(video: HTMLElement, channel_name: string | undefined, view_count: number | undefined): VideoType {
+  if (video.matches('ytd-compact-movie-renderer')) {
+    return 'movie';
+  }
+
   if (video.querySelector('div.badge-style-type-live-now-alternate, ytd-thumbnail[is-live-video], badge-shape.badge-shape-wiz--thumbnail-live')) {
     return 'live_stream';
   }
@@ -615,7 +628,7 @@ if (blocker.config.hide_playlists === true) {
 
 if (blocker.config.scan_video_recommendations === true) {
   WebPlatform_DOM_Element_Added_Observer_Class({
-    selector: 'ytd-compact-video-renderer,yt-lockup-view-model,ytd-compact-radio-renderer',
+    selector: 'ytd-compact-video-renderer,yt-lockup-view-model,ytd-compact-radio-renderer,ytd-compact-movie-renderer',
     options: { subtree: true },
   }).subscribe((element) => {
     if (element instanceof HTMLElement) {

@@ -124,6 +124,7 @@ setDefaultGMValue('channel_allowlist', []);
 setDefaultGMValue('channel_blocklist', []);
 setDefaultGMValue('hide_live_streams', false);
 setDefaultGMValue('hide_mixes', false);
+setDefaultGMValue('hide_movies', false);
 setDefaultGMValue('hide_playlists', false);
 setDefaultGMValue('hide_shorts', false);
 setDefaultGMValue('max_age', 0);
@@ -149,6 +150,7 @@ class YouTubeVideoBlocker {
       channel_blocklist: new Set(toLowerCase_trim_strings(channel_blocklist)),
       hide_live_streams: GM_getValue('hide_live_streams', false),
       hide_mixes: GM_getValue('hide_mixes', false),
+      hide_movies: GM_getValue('hide_movies', false),
       hide_playlists: GM_getValue('hide_playlists', false),
       hide_shorts: GM_getValue('hide_shorts', false),
       scan_video_recommendations: GM_getValue('scan_video_recommendations', true),
@@ -177,6 +179,12 @@ class YouTubeVideoBlocker {
     return false;
   }
   shouldBlock(video, info) {
+    if (this.config.hide_movies === true) {
+      if (info.type === 'movie') {
+        console.log('blocked: (hide_movies)', info);
+        return true;
+      }
+    }
     if (info.type === 'ad') {
       const element = video.querySelector('ytd-ad-slot-renderer');
       if (element instanceof HTMLElement) {
@@ -402,6 +410,9 @@ function getVideoTitle(video) {
   return element?.textContent.toLowerCase().trim() ?? '';
 }
 function getVideoType(video, channel_name, view_count) {
+  if (video.matches('ytd-compact-movie-renderer')) {
+    return 'movie';
+  }
   if (video.querySelector('div.badge-style-type-live-now-alternate, ytd-thumbnail[is-live-video], badge-shape.badge-shape-wiz--thumbnail-live')) {
     return 'live_stream';
   }
@@ -568,7 +579,7 @@ if (blocker.config.hide_playlists === true) {
 }
 if (blocker.config.scan_video_recommendations === true) {
   WebPlatform_DOM_Element_Added_Observer_Class({
-    selector: 'ytd-compact-video-renderer,yt-lockup-view-model,ytd-compact-radio-renderer',
+    selector: 'ytd-compact-video-renderer,yt-lockup-view-model,ytd-compact-radio-renderer,ytd-compact-movie-renderer',
     options: { subtree: true },
   }).subscribe((element) => {
     if (element instanceof HTMLElement) {
