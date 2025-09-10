@@ -50,20 +50,25 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
       subtree: this.config.options.subtree,
     });
     if (this.config.include_existing_elements === true) {
-      const sent_set = new Set();
-      const tree_walker = document.createTreeWalker(this.config.source, NodeFilter.SHOW_ELEMENT);
-      const processCurrentNode = () => {
-        if (sent_set.has(tree_walker.currentNode) === false) {
-          if (tree_walker.currentNode instanceof Element && tree_walker.currentNode.matches(this.config.selector) === true) {
-            this.$send(tree_walker.currentNode);
-            sent_set.add(tree_walker.currentNode);
-          }
-        }
-      };
-      processCurrentNode();
       if (this.config.options.subtree === true) {
+        const sent_set = new Set();
+        const tree_walker = document.createTreeWalker(this.config.source, NodeFilter.SHOW_ELEMENT);
+        const processCurrentNode = () => {
+          if (sent_set.has(tree_walker.currentNode) === false) {
+            if (tree_walker.currentNode instanceof Element && tree_walker.currentNode.matches(this.config.selector) === true) {
+              this.$send(tree_walker.currentNode);
+              sent_set.add(tree_walker.currentNode);
+            }
+          }
+        };
         while (tree_walker.nextNode()) {
           processCurrentNode();
+        }
+      } else {
+        for (const child of this.config.source.childNodes) {
+          if (child instanceof Element && child.matches(this.config.selector) === true) {
+            this.$send(child);
+          }
         }
       }
     }

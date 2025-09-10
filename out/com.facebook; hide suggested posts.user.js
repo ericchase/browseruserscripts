@@ -2,7 +2,7 @@
 // @name        com.facebook; hide suggested posts
 // @match       https://www.facebook.com/*
 // @version     1.0.0
-// @description 2025-09-08
+// @description 2025-09-08 - hide Reels, Your group suggestions, posts with Follow or Join buttons
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
@@ -50,20 +50,25 @@ class Class_WebPlatform_DOM_Element_Added_Observer_Class {
       subtree: this.config.options.subtree,
     });
     if (this.config.include_existing_elements === true) {
-      const sent_set = new Set();
-      const tree_walker = document.createTreeWalker(this.config.source, NodeFilter.SHOW_ELEMENT);
-      const processCurrentNode = () => {
-        if (sent_set.has(tree_walker.currentNode) === false) {
-          if (tree_walker.currentNode instanceof Element && tree_walker.currentNode.matches(this.config.selector) === true) {
-            this.$send(tree_walker.currentNode);
-            sent_set.add(tree_walker.currentNode);
-          }
-        }
-      };
-      processCurrentNode();
       if (this.config.options.subtree === true) {
+        const sent_set = new Set();
+        const tree_walker = document.createTreeWalker(this.config.source, NodeFilter.SHOW_ELEMENT);
+        const processCurrentNode = () => {
+          if (sent_set.has(tree_walker.currentNode) === false) {
+            if (tree_walker.currentNode instanceof Element && tree_walker.currentNode.matches(this.config.selector) === true) {
+              this.$send(tree_walker.currentNode);
+              sent_set.add(tree_walker.currentNode);
+            }
+          }
+        };
         while (tree_walker.nextNode()) {
           processCurrentNode();
+        }
+      } else {
+        for (const child of this.config.source.childNodes) {
+          if (child instanceof Element && child.matches(this.config.selector) === true) {
+            this.$send(child);
+          }
         }
       }
     }
@@ -104,76 +109,79 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
 }
 
 // src/com.facebook; hide suggested posts.user.ts
-(async () => {
-  const el_newsfeed = await WaitForNewsFeedSection();
-  SetupNewsFeedObserver(el_newsfeed);
-})();
-async function WaitForNewsFeedSection() {
-  return new Promise((resolve) => {
-    const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
+SetupNewsFeedObserver();
+async function SetupNewsFeedObserver() {
+  const newsfeed = await new Promise((resolve) => {
+    const observer = WebPlatform_DOM_Element_Added_Observer_Class({
       selector: 'h3',
     });
-    mutation_observer.subscribe((element) => {
+    observer.subscribe((element) => {
       if (element.textContent === 'News Feed posts') {
-        if (element.parentElement) {
-          const el_newsfeed = element.parentElement.querySelector('&>div:has(>div)');
-          if (el_newsfeed) {
-            mutation_observer.disconnect();
-            resolve(el_newsfeed);
-          }
+        const newsfeed2 = element.parentElement?.querySelector('&>div:has(>div)');
+        if (newsfeed2) {
+          observer.disconnect();
+          resolve(newsfeed2);
         }
       }
     });
   });
-}
-function SetupNewsFeedObserver(el_newsfeed) {
-  const intersection_observer = new IntersectionObserver(
-    (entries, observer) => {
+  const i_observer = new IntersectionObserver(
+    (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          observer.unobserve(entry.target);
+          i_observer.unobserve(entry.target);
           SetupPostObserver(entry.target);
         }
       }
     },
     {
-      root: el_newsfeed,
+      root: null,
       rootMargin: '0px',
       threshold: 0.25,
     },
   );
-  const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
+  const m_observer = WebPlatform_DOM_Element_Added_Observer_Class({
     selector: 'div',
     options: {
       subtree: false,
     },
-    source: el_newsfeed,
+    source: newsfeed,
   });
-  mutation_observer.subscribe((element) => {
-    intersection_observer.observe(element);
-  });
-}
-function SetupPostObserver(el_post) {
-  const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
-    selector: 'h4 div[role="button"]>span',
-    source: el_post,
-  });
-  mutation_observer.subscribe((element) => {
-    if (element.textContent === 'Follow' || element.textContent === 'Join') {
-      mutation_observer.disconnect();
-      ClosePost(el_post);
-    }
+  m_observer.subscribe((element) => {
+    i_observer.observe(element);
   });
 }
-function ClosePost(el_post) {
-  const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
-    selector: 'a[aria-label="hide post"]',
-    source: el_post,
+async function SetupPostObserver(post) {
+  const m_observer_1 = WebPlatform_DOM_Element_Added_Observer_Class({
+    selector: 'div[role="button"]>span',
+    source: post,
   });
-  mutation_observer.subscribe((element) => {
-    if (element instanceof HTMLAnchorElement) {
-      mutation_observer.disconnect();
-      element.click();
-    }
+  const m_observer_2 = WebPlatform_DOM_Element_Added_Observer_Class({
+    selector: 'div.html-div div>span',
+    source: post,
   });
+  try {
+    await new Promise((resolve) => {
+      m_observer_1.subscribe((element) => {
+        const text = element.textContent.trim();
+        if (text === 'Follow' || text === 'Join') {
+          resolve();
+        }
+      });
+      m_observer_2.subscribe((element) => {
+        const text = element.textContent.trim();
+        if (text === 'Reels' || text === 'Your group suggestions') {
+          resolve();
+        }
+      });
+    });
+    m_observer_1.disconnect();
+    m_observer_2.disconnect();
+    ClosePost(post);
+  } catch (error) {
+    console.error(error);
+  }
+}
+function ClosePost(post) {
+  post.remove();
 }
