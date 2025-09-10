@@ -51,8 +51,8 @@ function getSongUris(anchorSong: HTMLAnchorElement) {
         const uris: string[] = [];
 
         WebPlatform_DOM_Element_Added_Observer_Class({
-          source: proxy.document.documentElement,
           selector: '#pageContent > p',
+          source: proxy.document.documentElement,
         }).subscribe((element) => {
           const treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
           while (treeWalker.nextNode()) {
@@ -74,8 +74,8 @@ function getSongUris(anchorSong: HTMLAnchorElement) {
         });
 
         WebPlatform_DOM_Element_Added_Observer_Class({
-          source: proxy.document.documentElement,
           selector: '.songDownloadLink',
+          source: proxy.document.documentElement,
         }).subscribe((element) => {
           // @ts-ignore
           if (element?.parentElement?.href) {

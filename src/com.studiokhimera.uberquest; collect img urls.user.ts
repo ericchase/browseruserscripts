@@ -12,10 +12,14 @@ import { WebPlatform_DOM_Element_Added_Observer_Class } from './lib/ericchase/We
 
 const url_set = new Set<string>();
 console.log(url_set);
-WebPlatform_DOM_Element_Added_Observer_Class({ selector: 'a > img[src*="/next-hover.png"]' }).subscribe((next, unsubscribe) => {
+WebPlatform_DOM_Element_Added_Observer_Class({
+  selector: 'a > img[src*="/next-hover.png"]',
+}).subscribe((next, unsubscribe) => {
   if (next instanceof HTMLImageElement) {
     unsubscribe();
-    WebPlatform_DOM_Element_Added_Observer_Class({ selector: 'img' }).subscribe((element, unsubscribe) => {
+    WebPlatform_DOM_Element_Added_Observer_Class({
+      selector: 'img',
+    }).subscribe((element, unsubscribe) => {
       if (element instanceof HTMLImageElement) {
         if (element.src.endsWith('.webp') && url_set.has(element.src) === false) {
           url_set.add(element.src);

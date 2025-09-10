@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name        com.studiokhimera.uberquest; collect img urls
-// @match       https://uberquest.studiokhimera.com/comic/page/*
+// @name        com.facebook; hide suggested posts
+// @match       https://www.facebook.com/*
 // @version     1.0.0
-// @description 2024/10/13, 5:44:12 PM
+// @description 2025-09-08
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
@@ -103,25 +103,77 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
   return new Class_WebPlatform_DOM_Element_Added_Observer_Class(config);
 }
 
-// src/com.studiokhimera.uberquest; collect img urls.user.ts
-var url_set = new Set();
-console.log(url_set);
-WebPlatform_DOM_Element_Added_Observer_Class({
-  selector: 'a > img[src*="/next-hover.png"]',
-}).subscribe((next, unsubscribe) => {
-  if (next instanceof HTMLImageElement) {
-    unsubscribe();
-    WebPlatform_DOM_Element_Added_Observer_Class({
-      selector: 'img',
-    }).subscribe((element, unsubscribe2) => {
-      if (element instanceof HTMLImageElement) {
-        if (element.src.endsWith('.webp') && url_set.has(element.src) === false) {
-          url_set.add(element.src);
+// src/com.facebook; hide suggested posts.user.ts
+(async () => {
+  const el_newsfeed = await WaitForNewsFeedSection();
+  SetupNewsFeedObserver(el_newsfeed);
+})();
+async function WaitForNewsFeedSection() {
+  return new Promise((resolve) => {
+    const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
+      selector: 'h3',
+    });
+    mutation_observer.subscribe((element) => {
+      if (element.textContent === 'News Feed posts') {
+        if (element.parentElement) {
+          const el_newsfeed = element.parentElement.querySelector('&>div:has(>div)');
+          if (el_newsfeed) {
+            mutation_observer.disconnect();
+            resolve(el_newsfeed);
+          }
         }
       }
     });
-    setInterval(() => {
-      next.click();
-    }, 1000);
-  }
-});
+  });
+}
+function SetupNewsFeedObserver(el_newsfeed) {
+  const intersection_observer = new IntersectionObserver(
+    (entries, observer) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
+          SetupPostObserver(entry.target);
+        }
+      }
+    },
+    {
+      root: el_newsfeed,
+      rootMargin: '0px',
+      threshold: 0.25,
+    },
+  );
+  const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
+    selector: 'div',
+    options: {
+      subtree: false,
+    },
+    source: el_newsfeed,
+  });
+  mutation_observer.subscribe((element) => {
+    intersection_observer.observe(element);
+  });
+}
+function SetupPostObserver(el_post) {
+  const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
+    selector: 'h4 div[role="button"]>span',
+    source: el_post,
+  });
+  mutation_observer.subscribe((element) => {
+    if (element.textContent === 'Follow' || element.textContent === 'Join') {
+      mutation_observer.disconnect();
+      ClosePost(el_post);
+    }
+  });
+}
+function ClosePost(el_post) {
+  const mutation_observer = WebPlatform_DOM_Element_Added_Observer_Class({
+    selector: 'a[aria-label="hide post"]',
+    source: el_post,
+  });
+  mutation_observer.subscribe((element) => {
+    if (element instanceof HTMLAnchorElement) {
+      mutation_observer.disconnect();
+      element.click();
+    }
+  });
+}

@@ -10,65 +10,92 @@
 
 // src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
 class Class_WebPlatform_DOM_Element_Added_Observer_Class {
+  config;
+  $match_set = new Set();
+  $mutation_observer;
+  $subscription_set = new Set();
   constructor(config) {
-    config.options ??= {};
-    this.mutationObserver = new MutationObserver((mutationRecords) => {
+    this.config = {
+      include_existing_elements: config.include_existing_elements ?? true,
+      options: {
+        subtree: config.options?.subtree ?? true,
+      },
+      selector: config.selector,
+      source: config.source ?? document.documentElement,
+    };
+    this.$mutation_observer = new MutationObserver((mutationRecords) => {
+      const sent_set = new Set();
       for (const record of mutationRecords) {
-        if (record.target instanceof Element && record.target.matches(config.selector)) {
-          this.send(record.target);
-        }
-        const treeWalker = document.createTreeWalker(record.target, NodeFilter.SHOW_ELEMENT);
-        while (treeWalker.nextNode()) {
-          if (treeWalker.currentNode.matches(config.selector)) {
-            this.send(treeWalker.currentNode);
+        for (const node of record.addedNodes) {
+          const tree_walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+          const processCurrentNode = () => {
+            if (sent_set.has(tree_walker.currentNode) === false) {
+              if (tree_walker.currentNode instanceof Element && tree_walker.currentNode.matches(this.config.selector) === true) {
+                this.$send(tree_walker.currentNode);
+                sent_set.add(tree_walker.currentNode);
+              }
+            }
+          };
+          processCurrentNode();
+          if (this.config.options.subtree === true) {
+            while (tree_walker.nextNode()) {
+              processCurrentNode();
+            }
           }
         }
       }
     });
-    this.mutationObserver.observe(config.source ?? document.documentElement, {
+    this.$mutation_observer.observe(this.config.source, {
       childList: true,
-      subtree: config.options.subtree ?? true,
+      subtree: this.config.options.subtree,
     });
-    if ((config.include_existing_elements ?? true) === true) {
-      const treeWalker = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT);
-      while (treeWalker.nextNode()) {
-        if (treeWalker.currentNode.matches(config.selector)) {
-          this.send(treeWalker.currentNode);
+    if (this.config.include_existing_elements === true) {
+      const sent_set = new Set();
+      const tree_walker = document.createTreeWalker(this.config.source, NodeFilter.SHOW_ELEMENT);
+      const processCurrentNode = () => {
+        if (sent_set.has(tree_walker.currentNode) === false) {
+          if (tree_walker.currentNode instanceof Element && tree_walker.currentNode.matches(this.config.selector) === true) {
+            this.$send(tree_walker.currentNode);
+            sent_set.add(tree_walker.currentNode);
+          }
+        }
+      };
+      processCurrentNode();
+      if (this.config.options.subtree === true) {
+        while (tree_walker.nextNode()) {
+          processCurrentNode();
         }
       }
     }
   }
   disconnect() {
-    this.mutationObserver.disconnect();
-    for (const callback of this.subscriptionSet) {
-      this.subscriptionSet.delete(callback);
+    this.$mutation_observer.disconnect();
+    for (const callback of this.$subscription_set) {
+      this.$subscription_set.delete(callback);
     }
   }
   subscribe(callback) {
-    this.subscriptionSet.add(callback);
+    this.$subscription_set.add(callback);
     let abort = false;
-    for (const element of this.matchSet) {
+    for (const element of this.$match_set) {
       callback(element, () => {
-        this.subscriptionSet.delete(callback);
+        this.$subscription_set.delete(callback);
         abort = true;
       });
-      if (abort) return () => {};
+      if (abort) {
+        return () => {};
+      }
     }
     return () => {
-      this.subscriptionSet.delete(callback);
+      this.$subscription_set.delete(callback);
     };
   }
-  mutationObserver;
-  matchSet = new Set();
-  subscriptionSet = new Set();
-  send(element) {
-    if (!this.matchSet.has(element)) {
-      this.matchSet.add(element);
-      for (const callback of this.subscriptionSet) {
-        callback(element, () => {
-          this.subscriptionSet.delete(callback);
-        });
-      }
+  $send(element) {
+    this.$match_set.add(element);
+    for (const callback of this.$subscription_set) {
+      callback(element, () => {
+        this.$subscription_set.delete(callback);
+      });
     }
   }
 }
