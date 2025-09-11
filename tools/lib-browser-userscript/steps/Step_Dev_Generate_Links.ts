@@ -1,6 +1,7 @@
 import { Async_BunPlatform_File_Write_Text } from '../../../src/lib/ericchase/BunPlatform_File_Write_Text.js';
 import { Async_BunPlatform_Glob_Scan_Generator } from '../../../src/lib/ericchase/BunPlatform_Glob_Scan_Generator.js';
 import { NODE_PATH } from '../../../src/lib/ericchase/NodePlatform.js';
+import { NodePlatform_PathObject_Relative_Class } from '../../../src/lib/ericchase/NodePlatform_PathObject_Relative_Class.js';
 import { Builder } from '../../core/Builder.js';
 import { HTML_UTIL } from '../../core/bundle/html-util/html-util.js';
 import { Logger } from '../../core/Logger.js';
@@ -46,7 +47,8 @@ interface Config {
 async function async_getATags(dirpath: string, pattern: string): Promise<string[]> {
   const tags: string[] = [];
   for await (const entry of Async_BunPlatform_Glob_Scan_Generator(dirpath, pattern)) {
-    tags.push(`<a href="./${entry}" target="_blank">${entry}</a>`);
+    const po = NodePlatform_PathObject_Relative_Class(entry).toPosix();
+    tags.push(`<a href="${po.join({ dot: true })}" target="_blank">${po.join()}</a>`);
   }
   return tags;
 }
