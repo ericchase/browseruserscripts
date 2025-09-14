@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.facebook; hide suggested posts
-// @match       https://www.facebook.com/*
-// @version     1.0.0
+// @match       *://www.facebook.com/*
+// @version     1.0.1
 // @description 2025/09/08 - hide Reels, Your group suggestions, posts with Follow or Join buttons
 // @run-at      document-start
 // @grant       none

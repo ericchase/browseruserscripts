@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.youtube; dismiss popups
 // @match       *://*.youtube.*/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 2025/09/14
 // @run-at      document-start
 // @grant       none

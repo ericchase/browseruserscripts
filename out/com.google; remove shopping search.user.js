@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.google; remove shopping search
 // @match       *://*.google.*/search*
-// @version     1.0.0
+// @version     1.0.1
 // @description 2024/11/22, 7:59:08 PM
 // @run-at      document-start
 // @grant       none

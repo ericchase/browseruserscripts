@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.studiokhimera.uberquest; collect img urls
-// @match       https://uberquest.studiokhimera.com/comic/page/*
-// @version     1.0.0
+// @match       *://uberquest.studiokhimera.com/comic/page/*
+// @version     1.0.1
 // @description 2024/10/13, 5:44:12 PM
 // @run-at      document-start
 // @grant       none

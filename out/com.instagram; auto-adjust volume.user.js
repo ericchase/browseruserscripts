@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.instagram; auto-adjust volume
 // @match       *://*.instagram.com/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 2025/09/05
 // @run-at      document-start
 // @grant       none
