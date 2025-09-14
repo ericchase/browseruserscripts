@@ -109,7 +109,7 @@ function waitFor(selector, root) {
 
 //
 // Mutation Observer Functions
-// 2023-01-03
+// 2023/01/03
 
 /**
  * @param {object} param0

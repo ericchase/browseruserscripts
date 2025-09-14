@@ -2,7 +2,7 @@
 // @name        com.instagram; auto-adjust volume
 // @match       *://*.instagram.com/*
 // @version     1.0.0
-// @description 2025-09-05
+// @description 2025/09/05
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
