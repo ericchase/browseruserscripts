@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name        com.instagram; auto-adjust volume
-// @match       *://*.instagram.*/*
-// @version     1.0.1
-// @description 2025/09/05
+// @name        com.pinterest; close signup modal
+// @match       *://*.pinterest.*/*
+// @version     1.0.0
+// @description 2025-09-20
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
@@ -108,21 +108,36 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
   return new Class_WebPlatform_DOM_Element_Added_Observer_Class(config);
 }
 
-// src/com.instagram; auto-adjust volume.user.ts
-WebPlatform_DOM_Element_Added_Observer_Class({
-  selector: 'video',
-}).subscribe((element) => {
-  element.addEventListener('play', adjustVolume);
-  element.addEventListener('playing', adjustVolume);
-  element.addEventListener('volumechange', adjustVolume);
-});
-function adjustVolume(event) {
-  if (event.currentTarget instanceof HTMLVideoElement) {
-    if (event.currentTarget.muted !== false) {
-      event.currentTarget.muted = false;
-    }
-    if (event.currentTarget.volume !== 0.1) {
-      event.currentTarget.volume = 0.1;
-    }
-  }
+// src/com.pinterest; close signup modal.user.ts
+function watchForSignUpModal() {
+  const observer1 = WebPlatform_DOM_Element_Added_Observer_Class({
+    selector: 'div[name="trap-focus"]',
+  });
+  observer1.subscribe((element1) => {
+    const observer2 = WebPlatform_DOM_Element_Added_Observer_Class({
+      selector: 'button[aria-label="close"]',
+      source: element1,
+    });
+    observer2.subscribe((element2) => {
+      element2.click();
+      observer2.disconnect();
+    });
+  });
 }
+function watchForBottomRightUpsell() {
+  const observer1 = WebPlatform_DOM_Element_Added_Observer_Class({
+    selector: 'div[data-test-id="bottom-right-upsell"]',
+  });
+  observer1.subscribe((element1) => {
+    const observer2 = WebPlatform_DOM_Element_Added_Observer_Class({
+      selector: 'button[aria-label="Close Bottom Right Upsell"]',
+      source: element1,
+    });
+    observer2.subscribe((element2) => {
+      element2.click();
+      observer2.disconnect();
+    });
+  });
+}
+watchForSignUpModal();
+watchForBottomRightUpsell();

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.vgmtreasurechest; download song
-// @match       *://vgmtreasurechest.com/soundtracks/*
+// @match       *://vgmtreasurechest.*/soundtracks/*
 // @version     1.0.1
 // @description 2024/08/09, 5:46:10 PM
 // @run-at      document-start

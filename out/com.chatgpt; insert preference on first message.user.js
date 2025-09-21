@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.chatgpt; insert preference on first message
-// @match       *://chatgpt.com/*
+// @match       *://chatgpt.*/*
 // @version     1.0.0
 // @description 2025/07/12, 9:28:02 PM
 // @run-at      document-end
