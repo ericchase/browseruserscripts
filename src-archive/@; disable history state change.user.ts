@@ -2,7 +2,7 @@
 // @name        @; disable history state change
 // @match       *://*/*
 // @version     1.0.1
-// @description 2025/07/10, 8:34:27 PM
+// @description 2025/07/10
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

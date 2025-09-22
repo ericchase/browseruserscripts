@@ -2,7 +2,7 @@
 // @name        com.google; remove shopping search
 // @match       *://*.google.*/search*
 // @version     1.0.1
-// @description 2024/11/22, 7:59:08 PM
+// @description 2024/11/22
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

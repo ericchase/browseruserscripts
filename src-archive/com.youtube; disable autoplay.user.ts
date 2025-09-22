@@ -2,7 +2,7 @@
 // @name        com.youtube; disable autoplay
 // @match       *://www.youtube.com/watch
 // @version     1.0.0
-// @description 2023/12/23, 9:34:58 AM
+// @description 2023/12/23
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

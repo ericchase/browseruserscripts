@@ -2,7 +2,7 @@
 // @name        com.studiokhimera.uberquest; collect img urls
 // @match       *://uberquest.studiokhimera.*/comic/page/*
 // @version     1.0.1
-// @description 2024/10/13, 5:44:12 PM
+// @description 2024/10/13
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

@@ -2,7 +2,7 @@
 // @name        com.google; clean up search results
 // @match       *://*.google.com/*
 // @version     2.0.3
-// @description 2022/08/11, 1:39:30 AM
+// @description 2022/08/11
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

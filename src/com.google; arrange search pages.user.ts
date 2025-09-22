@@ -2,7 +2,7 @@
 // @name        com.google; arrange search pages
 // @match       *://*.google.*/search*
 // @version     1.0.0
-// @description 2025-09-20
+// @description 2025/09/20
 // @run-at      document-start
 // @grant       GM_getValue
 // @grant       GM_listValues

@@ -2,7 +2,7 @@
 // @name        org.p5play; remove login overlay
 // @match       *://p5play.*/learn/*
 // @version     1.0.1
-// @description 2024/08/11, 1:40:56 PM
+// @description 2024/08/11
 // @run-at      document-end
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

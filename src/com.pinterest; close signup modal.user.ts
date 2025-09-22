@@ -2,7 +2,7 @@
 // @name        com.pinterest; close signup modal
 // @match       *://*.pinterest.*/*
 // @version     1.0.0
-// @description 2025-09-20
+// @description 2025/09/20
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

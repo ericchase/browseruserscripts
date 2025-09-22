@@ -2,7 +2,7 @@
 // @name        com.khinsider; generate album downloader
 // @match       *://downloads.khinsider.*/game-soundtracks/album/*
 // @version     1.0.1
-// @description 2023/12/20, 9:22:10 AM
+// @description 2023/12/20
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

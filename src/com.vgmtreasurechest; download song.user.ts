@@ -2,7 +2,7 @@
 // @name        com.vgmtreasurechest; download song
 // @match       *://vgmtreasurechest.*/soundtracks/*
 // @version     1.0.1
-// @description 2024/08/09, 5:46:10 PM
+// @description 2024/08/09
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

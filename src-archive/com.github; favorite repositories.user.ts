@@ -2,7 +2,7 @@
 // @name        com.github; favorite repositories
 // @match       *://github.com/*
 // @version     1.1.4
-// @description 2024/03/12, 2:56:09 AM
+// @description 2024/03/12
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

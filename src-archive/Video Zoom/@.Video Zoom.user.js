@@ -2,7 +2,7 @@
 // @name        *: Video Zoom
 // @match       *://*/*
 // @version     1.0.8
-// @description 1/23/2022, 12:58:35 AM
+// @description 2022/01/23
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts

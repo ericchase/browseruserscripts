@@ -2,7 +2,7 @@
 // @name        @; pause scrolling on scroll lock
 // @match       *://*/*
 // @version     1.0.1
-// @description 2024/07/19, 5:16:31 PM
+// @description 2024/07/19
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
