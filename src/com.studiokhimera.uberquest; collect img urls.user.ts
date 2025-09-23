@@ -8,10 +8,11 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
+import { Core_Console_Log } from './lib/ericchase/Core_Console_Log.js';
 import { WebPlatform_DOM_Element_Added_Observer_Class } from './lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.js';
 
 const url_set = new Set<string>();
-console.log(url_set);
+Core_Console_Log(url_set);
 WebPlatform_DOM_Element_Added_Observer_Class({
   selector: 'a > img[src*="/next-hover.png"]',
 }).subscribe((next, unsubscribe) => {

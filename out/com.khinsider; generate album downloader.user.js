@@ -8,6 +8,11 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
+// src/lib/ericchase/Core_Console_Error.ts
+function Core_Console_Error(...items) {
+  console['error'](...items);
+}
+
 // src/lib/ericchase/Core_Console_Log.ts
 function Core_Console_Log(...items) {
   console['log'](...items);
@@ -322,7 +327,7 @@ async function main() {
   const jobQueue = new JobQueue(1000);
   jobQueue.subscribe((trackDetails, error) => {
     if (error) {
-      console.log(error);
+      Core_Console_Error(error);
     }
     if (trackDetails) {
       trackList.push(trackDetails);

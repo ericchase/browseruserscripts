@@ -8,6 +8,7 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
+import { Core_Console_Error } from './lib/ericchase/Core_Console_Error.js';
 import { WebPlatform_DOM_Element_Added_Observer_Class } from './lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.js';
 
 SetupNewsFeedObserver();
@@ -84,7 +85,7 @@ async function SetupPostObserver(post: Element) {
     m_observer_2.disconnect();
     ClosePost(post);
   } catch (error) {
-    console.error(error);
+    Core_Console_Error(error);
   }
 }
 

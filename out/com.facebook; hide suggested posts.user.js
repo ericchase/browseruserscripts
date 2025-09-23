@@ -8,6 +8,11 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
+// src/lib/ericchase/Core_Console_Error.ts
+function Core_Console_Error(...items) {
+  console['error'](...items);
+}
+
 // src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
 class Class_WebPlatform_DOM_Element_Added_Observer_Class {
   config;
@@ -179,7 +184,7 @@ async function SetupPostObserver(post) {
     m_observer_2.disconnect();
     ClosePost(post);
   } catch (error) {
-    console.error(error);
+    Core_Console_Error(error);
   }
 }
 function ClosePost(post) {

@@ -18,14 +18,14 @@ observer.subscribe((element) => {
     if (h2.textContent.includes('We reimagined cable.')) {
       for (const button of element.querySelectorAll('button')) {
         if (button.textContent.includes('Dismiss')) {
-          console.log('popup dismissed');
+          // console.log('popup dismissed');
           button.click();
         }
       }
     } else if (h2.textContent.includes('Don’t miss the highlights')) {
       for (const button of element.querySelectorAll('button')) {
         if (button.textContent.includes('No thanks')) {
-          console.log('popup dismissed');
+          // console.log('popup dismissed');
           button.click();
         }
       }

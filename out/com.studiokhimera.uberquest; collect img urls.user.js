@@ -8,6 +8,11 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
+// src/lib/ericchase/Core_Console_Log.ts
+function Core_Console_Log(...items) {
+  console['log'](...items);
+}
+
 // src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
 class Class_WebPlatform_DOM_Element_Added_Observer_Class {
   config;
@@ -110,7 +115,7 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
 
 // src/com.studiokhimera.uberquest; collect img urls.user.ts
 var url_set = new Set();
-console.log(url_set);
+Core_Console_Log(url_set);
 WebPlatform_DOM_Element_Added_Observer_Class({
   selector: 'a > img[src*="/next-hover.png"]',
 }).subscribe((next, unsubscribe) => {

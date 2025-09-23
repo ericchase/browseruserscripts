@@ -8,6 +8,7 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
+import { Core_Console_Error } from './lib/ericchase/Core_Console_Error.js';
 import { Core_Console_Log } from './lib/ericchase/Core_Console_Log.js';
 import { Core_String_Trim_BlockText } from './lib/ericchase/Core_String_Trim_BlockText.js';
 import { Async_Core_Utility_Sleep } from './lib/ericchase/Core_Utility_Sleep.js';
@@ -23,7 +24,7 @@ async function main() {
   const jobQueue = new JobQueue<TrackDetails>(1000);
   jobQueue.subscribe((trackDetails, error) => {
     if (error) {
-      console.log(error);
+      Core_Console_Error(error);
     }
     if (trackDetails) {
       trackList.push(trackDetails);

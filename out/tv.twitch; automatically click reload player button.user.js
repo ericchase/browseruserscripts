@@ -8,6 +8,11 @@
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
 
+// src/lib/ericchase/Core_Console_Error.ts
+function Core_Console_Error(...items) {
+  console['error'](...items);
+}
+
 // src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
 class Class_WebPlatform_DOM_Element_Added_Observer_Class {
   config;
@@ -114,7 +119,7 @@ var observer1 = WebPlatform_DOM_Element_Added_Observer_Class({
 });
 observer1.subscribe((element1) => {
   if (element1.textContent === 'Click Here to Reload Player') {
-    console.log('Player crashed. Reloading.');
+    Core_Console_Error('Player crashed. Reloading.');
     window.location.reload();
   }
 });

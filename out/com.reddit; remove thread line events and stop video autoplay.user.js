@@ -203,7 +203,6 @@ async function processVideo(element) {
       selector: 'video',
       source: shadowRoot,
     }).subscribe((video) => {
-      console.log('found', video);
       video.addEventListener('play', playHandler);
     });
   }
