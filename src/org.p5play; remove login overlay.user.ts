@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        org.p5play; remove login overlay
-// @match       *://p5play.*/learn/*
+// @match       https://p5play.org/learn/*
 // @version     1.0.1
 // @description 2024/08/11
 // @run-at      document-end

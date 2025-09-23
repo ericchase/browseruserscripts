@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.google; arrange search pages
-// @match       *://*.google.*/search*
+// @match       https://www.google.com/search*
 // @version     1.0.0
 // @description 2025/09/20
 // @run-at      document-start

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.reddit; remove thread line events and stop video autoplay
-// @match       *://*.reddit.*/*
+// @match       https://www.reddit.com/*
 // @version     1.0.1
 // @description 2024/11/23
 // @run-at      document-start

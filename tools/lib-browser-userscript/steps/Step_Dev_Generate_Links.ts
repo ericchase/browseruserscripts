@@ -46,8 +46,14 @@ interface Config {
 
 async function async_getATags(dirpath: string, pattern: string): Promise<string[]> {
   const tags: string[] = [];
-  for await (const entry of Async_BunPlatform_Glob_Scan_Generator(dirpath, pattern)) {
-    const po = NodePlatform_PathObject_Relative_Class(entry).toPosix();
+  const path_objects = (await Array.fromAsync(Async_BunPlatform_Glob_Scan_Generator(dirpath, pattern)))
+    .map((path) => {
+      return NodePlatform_PathObject_Relative_Class(path).toPosix();
+    })
+    .sort((a, b) => {
+      return a.ext.localeCompare(b.ext);
+    });
+  for (const po of path_objects) {
     tags.push(`<a href="${po.join({ dot: true })}" target="_blank">${po.join()}</a>`);
   }
   return tags;

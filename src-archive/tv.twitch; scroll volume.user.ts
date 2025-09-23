@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        tv.twitch; scroll volume
-// @match       *://www.twitch.tv/*
+// @match       https://www.twitch.tv/*
 // @version     1.0.2
 // @description 2023/01/02
 // @run-at      document-start

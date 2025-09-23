@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.instagram; remove image,video overlay on right click
-// @match       *://*.instagram.com/*
+// @match       https://www.instagram.com/*
 // @version     1.0.3
 // @description 2022/01/28
 // @run-at      document-end

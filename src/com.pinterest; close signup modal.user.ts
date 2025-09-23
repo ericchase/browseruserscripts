@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.pinterest; close signup modal
-// @match       *://*.pinterest.*/*
+// @match       https://www.pinterest.com/*
 // @version     1.0.0
 // @description 2025/09/20
 // @run-at      document-start

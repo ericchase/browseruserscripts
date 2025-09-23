@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.youtube; disable autoplay
-// @match       *://www.youtube.com/watch
+// @match       https://www.youtube.com/watch
 // @version     1.0.0
 // @description 2023/12/23
 // @run-at      document-start

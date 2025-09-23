@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.youtube; filter videos
-// @match       *://*.youtube.*/*
+// @match       https://www.youtube.com/*
 // @version     1.0.2
 // @description 2022/05/22
 // @run-at      document-start

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.youtube; youtube video blocker
-// @match       *://*.youtube.*/*
+// @match       https://www.youtube.com/*
 // @version     2.1.1
 // @description 2025/08/30 (https://addons.mozilla.org/en-US/firefox/addon/youtube-video-blocker/)
 // @run-at      document-idle

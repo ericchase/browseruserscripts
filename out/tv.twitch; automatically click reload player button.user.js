@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        tv.twitch; automatically click reload player button
-// @match       *://*.twitch.*/*
+// @match       https://www.twitch.tv/*
 // @version     1.0.0
 // @description 2025/09/22
 // @run-at      document-start

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.instagram; stop routing to login
-// @match       *://*.instagram.com/*
+// @match       https://www.instagram.com/*
 // @version     1.0.0
 // @description 2025/08/18
 // @run-at      document-start

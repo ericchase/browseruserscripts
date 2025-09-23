@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.reddit; stop deselection of text on click
-// @match       *://*.reddit.*/*
+// @match       https://www.reddit.com/*
 // @version     1.0.1
 // @description 2023/11/15
 // @run-at      document-start

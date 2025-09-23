@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name        com.instagram; auto-adjust volume
-// @match       https://www.instagram.com/*
-// @version     1.0.1
-// @description 2025/09/05
+// @name        tv.twitch; periodically update live previews
+// @match       https://www.twitch.tv/*
+// @version     1.0.0
+// @description 2025/09/22
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
@@ -108,21 +108,36 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
   return new Class_WebPlatform_DOM_Element_Added_Observer_Class(config);
 }
 
-// src/com.instagram; auto-adjust volume.user.ts
-WebPlatform_DOM_Element_Added_Observer_Class({
-  selector: 'video',
-}).subscribe((element) => {
-  element.addEventListener('play', adjustVolume);
-  element.addEventListener('playing', adjustVolume);
-  element.addEventListener('volumechange', adjustVolume);
+// src/tv.twitch; periodically update live previews.user.ts
+var update_interval = 5 * 1000;
+var thumbnail_set = new Set();
+var resolution_regex = /320x180|440x248/;
+var arbitrary_counter = 0;
+var observer1 = WebPlatform_DOM_Element_Added_Observer_Class({
+  selector: 'img[class="tw-image"]',
 });
-function adjustVolume(event) {
-  if (event.currentTarget instanceof HTMLVideoElement) {
-    if (event.currentTarget.muted !== false) {
-      event.currentTarget.muted = false;
-    }
-    if (event.currentTarget.volume !== 0.1) {
-      event.currentTarget.volume = 0.1;
-    }
+observer1.subscribe((element1) => {
+  if (element1.getAttribute('src')?.match(resolution_regex)?.index) {
+    thumbnail_set.add(element1);
+    updateThumbnailSrc(element1);
+  }
+});
+function updateThumbnailSrc(thumbnail) {
+  const src = thumbnail.getAttribute('src');
+  if (src) {
+    const src_url = new URL(src.replace(resolution_regex, '640x360'));
+    src_url.searchParams.set('ac', arbitrary_counter.toString(10));
+    thumbnail.setAttribute('src', src_url.toString());
+    arbitrary_counter++;
   }
 }
+function updateAllThumbnails() {
+  for (const thumbnail of thumbnail_set) {
+    updateThumbnailSrc(thumbnail);
+  }
+  if (arbitrary_counter > 999999) {
+    arbitrary_counter = 0;
+  }
+  setTimeout(updateAllThumbnails, update_interval);
+}
+setTimeout(updateAllThumbnails, update_interval);

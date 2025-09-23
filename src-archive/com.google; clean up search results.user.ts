@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.google; clean up search results
-// @match       *://*.google.com/*
+// @match       https://www.google.com/*
 // @version     2.0.3
 // @description 2022/08/11
 // @run-at      document-start

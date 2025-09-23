@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        com.github; favorite repositories
-// @match       *://github.com/*
+// @match       https://github.com/*
 // @version     1.1.4
 // @description 2024/03/12
 // @run-at      document-start
