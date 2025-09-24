@@ -1,12 +1,48 @@
 // ==UserScript==
-// @name        tv.twitch; periodically update live previews
+// @name        tv.twitch; automatically enter theatre mode
 // @match       https://www.twitch.tv/*
-// @version     1.0.1
-// @description 2025/09/22
+// @version     1.0.0
+// @description 2025/09/23
 // @run-at      document-start
 // @grant       none
 // @homepageURL https://github.com/ericchase/browseruserscripts
 // ==/UserScript==
+
+// src/lib/ericchase/WebPlatform_DOM_Attribute_Observer_Class.ts
+class Class_WebPlatform_DOM_Attribute_Observer_Class {
+  constructor(config) {
+    config.options ??= {};
+    this.mutationObserver = new MutationObserver((mutationRecords) => {
+      for (const record of mutationRecords) {
+        this.send(record);
+      }
+    });
+    this.mutationObserver.observe(config.source ?? document.documentElement, {
+      attributes: true,
+      attributeFilter: config.options.attributeFilter,
+      attributeOldValue: config.options.attributeOldValue ?? true,
+      subtree: config.options.subtree ?? true,
+    });
+  }
+  subscribe(callback) {
+    this.subscriptionSet.add(callback);
+    return () => {
+      this.subscriptionSet.delete(callback);
+    };
+  }
+  mutationObserver;
+  subscriptionSet = new Set();
+  send(record) {
+    for (const callback of this.subscriptionSet) {
+      callback(record, () => {
+        this.subscriptionSet.delete(callback);
+      });
+    }
+  }
+}
+function WebPlatform_DOM_Attribute_Observer_Class(config) {
+  return new Class_WebPlatform_DOM_Attribute_Observer_Class(config);
+}
 
 // src/lib/ericchase/WebPlatform_DOM_Element_Added_Observer_Class.ts
 class Class_WebPlatform_DOM_Element_Added_Observer_Class {
@@ -108,39 +144,22 @@ function WebPlatform_DOM_Element_Added_Observer_Class(config) {
   return new Class_WebPlatform_DOM_Element_Added_Observer_Class(config);
 }
 
-// src/tv.twitch; periodically update live previews.user.ts
-var update_interval = 5 * 1000;
-var thumbnail_set = new Set();
-var resolution_regex = /320x180|440x248/;
-var desired_resolution = '640x360';
-var arbitrary_counter = 0;
+// src/tv.twitch; automatically enter theatre mode.user.ts
 var observer1 = WebPlatform_DOM_Element_Added_Observer_Class({
-  selector: 'img[class="tw-image"]',
+  selector: 'button[aria-label="Theatre Mode (alt+t)"]',
 });
 observer1.subscribe((element1) => {
-  if (element1.getAttribute('src')?.match(resolution_regex)?.index) {
-    if (thumbnail_set.size === 0) {
-      setTimeout(updateAllThumbnails, update_interval);
+  observer1.disconnect();
+  element1.click();
+  const observer2 = WebPlatform_DOM_Attribute_Observer_Class({
+    options: {
+      attributeFilter: ['aria-label'],
+    },
+    source: element1,
+  });
+  observer2.subscribe(() => {
+    if (element1.getAttribute('aria-label') === 'Theatre Mode (alt+t)') {
+      element1.click();
     }
-    thumbnail_set.add(element1);
-    updateThumbnailSrc(element1);
-  }
+  });
 });
-function updateThumbnailSrc(thumbnail) {
-  const src = thumbnail.getAttribute('src');
-  if (src) {
-    const src_url = new URL(src.replace(resolution_regex, desired_resolution));
-    src_url.searchParams.set('ac', arbitrary_counter.toString(10));
-    thumbnail.setAttribute('src', src_url.toString());
-    arbitrary_counter++;
-  }
-}
-function updateAllThumbnails() {
-  for (const thumbnail of thumbnail_set) {
-    updateThumbnailSrc(thumbnail);
-  }
-  if (arbitrary_counter > 999999) {
-    arbitrary_counter = 0;
-  }
-  setTimeout(updateAllThumbnails, update_interval);
-}
