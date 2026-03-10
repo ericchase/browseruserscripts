@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.x; count posts per year
 // @match       https://x.com/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 2026/03/08
 // @run-at      document-start
 // @grant       none
@@ -121,6 +121,8 @@ WebPlatform_DOM_Element_Added_Observer_Class({
     post_count = Number.parseFloat(value.replaceAll(',', ''));
     if (value.endsWith('K')) {
       post_count *= 1000;
+    } else if (value.endsWith('M')) {
+      post_count *= 1e6;
     }
     if (join_year !== 0) {
       DisplayPostsPerYear();
