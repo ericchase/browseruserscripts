@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        com.steampowered; click ignore on every game card
 // @match       https://store.steampowered.com/curator/*
-// @version     1.0.0
+// @version     1.0.1
 // @description 2026/03/17 - Experimental. Use at own risk.
 // @run-at      document-start
 // @grant       none
@@ -25,7 +25,7 @@ function process_set_timeout() {
     } else {
       process_clear_timeout();
     }
-  }, 50);
+  }, 500); // setting this too low may result in temp(?) ip ban from server
 }
 
 function process_clear_timeout() {
